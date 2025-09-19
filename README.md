@@ -1,36 +1,136 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎮 Zefra Trivia
 
-## Getting Started
+Zefra Trivia is a peer-to-peer (P2P) trivia game built with **Next.js, Firebase, Firestore, and OpenRouter AI**.  
+Players compete in real-time or asynchronously, staking in-app tokens that can be converted to real money via **Paystack**.  
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🚀 Core Features
+
+- **Authentication & Profiles**
+  - Firebase Auth (email/password + optional social login).
+  - User profile with username + selectable avatar.
+  - Tracks stats: matches played, wins/losses, tokens earned.
+
+- **Wallet & Tokens**
+  - In-app tokens only (`₦1000 = 100 Tokens`).
+  - Deposit/Withdraw via Paystack.
+  - Balance displayed in dashboard.
+  - Stakes locked in escrow until match resolution.
+  - System takes **10% fee** from winnings.
+
+- **Game Modes**
+  1. **Play Online (Live 1v1)**
+     - Player A selects 2 subjects → challenges Player B.
+     - Player B accepts → selects 2 subjects.
+     - AI generates 10 unique Qs for each player.
+     - 10s timer per question with instant feedback (✅ correct, ❌ wrong).
+     - Pot goes to winner minus 10% fee.
+  
+  2. **Play & Wait (Async 1v1)**
+     - Player A plays first, Player B later.
+     - No expiry (creator can cancel if unaccepted).
+     - Stakes remain locked until resolved.
+
+  3. **Demo Mode**
+     - Free-to-play.
+     - Ads integrated.
+     - No tokens, no leaderboard.
+
+  4. **AI Mode**
+     - Player challenges AI (70% win chance for AI).
+     - Tokens staked as normal, payout if player wins.
+
+- **Trivia Questions**
+  - Subjects: Fixed 10 categories (hardcoded).
+  - AI (OpenRouter) generates 10 Qs **at match start**.
+  - Qs stored in Firestore temporarily → auto-deleted after match.
+  - Metadata (score, outcome) retained.
+
+- **Leaderboard**
+  - Global leaderboard (top-ranked players).
+  - Tracks cumulative tokens won, win rate, and subjects played.
+
+- **PWA Support**
+  - Installable on mobile/desktop.
+  - Push notifications (async match reminders).
+  - Offline-friendly (demo mode works).
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend**: Next.js 14 (App Router), React, TailwindCSS.
+- **Backend**: Firebase Auth + Firestore (real-time listeners).
+- **AI Engine**: OpenRouter (LLM-powered question generation).
+- **Payments**: Paystack (deposits/withdrawals).
+- **Deployment**: Vercel (frontend) + Firebase Hosting/Functions (backend if needed).
+- **Extras**: PWA integration for installable app experience.
+
+---
+
+
+## ⚡ Firestore Schema (Draft)
+
+### `users`
+```json
+{
+  "uid": "string",
+  "username": "string",
+  "avatar": "string",
+  "balance": 500,
+  "stats": {
+    "gamesPlayed": 12,
+    "wins": 7,
+    "losses": 5,
+    "tokensEarned": 300
+  },
+  "createdAt": "timestamp"
+}
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### `matches`
+```json
+{
+  "matchId": "string",
+  "playerA": "uid",
+  "playerB": "uid",
+  "subjects": ["History", "Science", "Sports", "Tech"],
+  "questions": {
+    "playerA": [...],
+    "playerB": [...]
+  },
+  "status": "pending | active | completed | cancelled",
+  "stake": 50,
+  "winner": "uid",
+  "createdAt": "timestamp",
+  "completedAt": "timestamp"
+}
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+### 📧 Email Notifications
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+We use **Nodemailer** for transactional emails.  
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+| Event                | Recipient | Template File                  | Trigger Point / Description |
+|----------------------|-----------|--------------------------------|----------------------------|
+| User Registration    | User      | `welcomeUser.js`               | After `/api/auth/register` success |
+| User Registration    | Admin     | `notifyAdmin.js`               | After `/api/auth/register` success |
+| Password Reset       | User      | `passwordReset.js`             | After user requests password reset |
+| Deposit Success      | User      | `depositSuccess.js`            | After payment webhook confirms deposit |
+| Withdrawal Request   | Admin     | `withdrawalRequest.js`         | After user submits withdrawal request |
+| Withdrawal Processed | User      | `withdrawalProcessed.js`       | After admin approves and processes withdrawal |
+| Game Invitation      | User      | `gameInvitation.js`            | When another player sends a game invite |
+| Game Accepted        | User      | `gameAccepted.js`              | When opponent accepts the game invite |
+| Game Result (Win)    | User      | `gameWin.js`                   | After game engine calculates winner |
+| Game Result (Loss)   | User      | `gameLoss.js`                  | After game engine calculates loser |
+| Game Result          | Admin     | `adminGameResult.js`           | After game engine settles payout: winner, loser, stake, fee |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Templates** live in `/emails`.  
+**Mailer logic** lives in `/lib/mailer.js`.  

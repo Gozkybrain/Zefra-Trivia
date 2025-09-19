@@ -1,6 +1,6 @@
-# 🎮 Zefra Trivia
+# 🎮 TriviB
 
-Zefra Trivia is a peer-to-peer (P2P) trivia game built with **Next.js, Firebase, Firestore, and OpenRouter AI**.  
+Zefra TriviB is a peer-to-peer (P2P) trivia game built with **Next.js, Firebase, Firestore, and OpenRouter AI**.  
 Players compete in real-time or asynchronously, staking in-app tokens that can be converted to real money via **Paystack**.  
 
 ---

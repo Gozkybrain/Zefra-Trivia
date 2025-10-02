@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "Trivib",
   description: "Trivib - The ultimate trivia battle game promoted by Zefra",
-  themeColor: "#4f46e5",
+  // themeColor: "#4f46e5",
 };
 
 export default function RootLayout({ children }) {

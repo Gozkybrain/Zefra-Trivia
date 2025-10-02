@@ -1,0 +1,384 @@
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0118 0%, #1a0a2e 50%, #16213e 100%);
+  position: relative;
+  overflow: hidden;
+  padding: 2rem 1rem;
+}
+
+.bubbles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.bubble {
+  position: absolute;
+  bottom: -100px;
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle at 30% 30%, rgba(0, 255, 204, 0.4), rgba(0, 204, 255, 0.1));
+  border-radius: 50%;
+  opacity: 0.6;
+  animation: rise 20s infinite ease-in;
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
+}
+
+@keyframes rise {
+  0% {
+    bottom: -100px;
+    transform: translateX(0) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.4;
+  }
+  100% {
+    bottom: 110vh;
+    transform: translateX(50px) scale(0.5);
+    opacity: 0;
+  }
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.glowOrb {
+  position: absolute;
+  top: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle, rgba(0, 255, 204, 0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: pulse 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateX(-50%) scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+.title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.gradient {
+  background: linear-gradient(135deg, #00ffcc 0%, #00ccff 50%, #0099ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 30px rgba(0, 255, 204, 0.5));
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #a0aec0;
+  font-weight: 300;
+  letter-spacing: 1px;
+}
+
+.warningCard, .readyCard {
+  background: rgba(26, 32, 44, 0.6);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(0, 255, 204, 0.3);
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 255, 204, 0.1);
+}
+
+.warningIcon, .checkIcon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.checkIcon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1rem;
+  background: linear-gradient(135deg, #00ffcc, #00ccff);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: #0a0118;
+  font-weight: bold;
+  box-shadow: 0 0 30px rgba(0, 255, 204, 0.6);
+}
+
+.warningCard h3, .readyCard h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #00ffcc;
+}
+
+.warningCard p, .readyCard p {
+  color: #cbd5e0;
+  line-height: 1.6;
+}
+
+.safariSteps {
+  text-align: left;
+  margin: 1.5rem auto 0;
+  max-width: 350px;
+  color: #cbd5e0;
+  line-height: 1.8;
+}
+
+.safariSteps li {
+  margin-bottom: 0.5rem;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.step {
+  background: rgba(26, 32, 44, 0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 255, 204, 0.2);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  transition: all 0.3s ease;
+}
+
+.step:hover {
+  border-color: rgba(0, 255, 204, 0.5);
+  box-shadow: 0 8px 32px rgba(0, 255, 204, 0.15);
+  transform: translateX(8px);
+}
+
+.stepNumber {
+  min-width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #00ffcc, #00ccff);
+  color: #0a0118;
+  font-weight: bold;
+  font-size: 1.2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.4);
+}
+
+.stepContent {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+}
+
+.stepIcon {
+  color: #00ffcc;
+  display: flex;
+  align-items: center;
+}
+
+.stepContent h4 {
+  font-size: 1.1rem;
+  color: #e2e8f0;
+  margin-bottom: 0.5rem;
+}
+
+.stepContent p {
+  color: #a0aec0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.ctaButton {
+  width: 100%;
+  padding: 1.2rem 2rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #00ffcc, #00ccff);
+  color: #0a0118;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 40px rgba(0, 255, 204, 0.3);
+  margin-bottom: 3rem;
+}
+
+.ctaButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 50px rgba(0, 255, 204, 0.5);
+}
+
+.ctaButton:active {
+  transform: translateY(0);
+}
+
+.ctaGlow {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  50%, 100% {
+    left: 100%;
+  }
+}
+
+.ctaText {
+  position: relative;
+  z-index: 1;
+}
+
+.illustration {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+}
+
+.phone {
+  width: 200px;
+  height: 400px;
+  background: linear-gradient(135deg, rgba(26, 32, 44, 0.8), rgba(10, 1, 24, 0.9));
+  border: 3px solid rgba(0, 255, 204, 0.5);
+  border-radius: 30px;
+  padding: 15px;
+  box-shadow: 0 20px 60px rgba(0, 255, 204, 0.3);
+  position: relative;
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.phoneScreen {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, #0a0118, #1a0a2e);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.appIcon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #00ffcc, #00ccff);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #0a0118;
+  box-shadow: 0 10px 30px rgba(0, 255, 204, 0.5);
+  z-index: 2;
+  position: relative;
+}
+
+.scanLines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 255, 204, 0.03) 0px,
+    transparent 2px,
+    transparent 4px
+  );
+  pointer-events: none;
+  animation: scan 8s linear infinite;
+}
+
+@keyframes scan {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 2.5rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .step {
+    padding: 1rem;
+  }
+
+  .stepContent {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .phone {
+    width: 160px;
+    height: 320px;
+  }
+
+  .appIcon {
+    width: 60px;
+    height: 60px;
+    font-size: 2rem;
+  }
+}

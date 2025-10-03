@@ -1,11 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import styles from './page.module.css';
 import Link from "next/link";
+import CurvedTitle from './CurvedTitle';
 
 
 export default function Home() {
+  // * Recent or Top Users will be fixed with firebase later
   const [recentUsers] = useState([
     { name: 'Alex', role: 'Pro', avatar: '👨‍🚀' },
     { name: 'Sofia', role: 'New', avatar: '🥷' },
@@ -17,19 +19,10 @@ export default function Home() {
     { name: 'Nina', role: 'Top Player', avatar: '🧟‍♀️' },
     { name: 'Maya', role: 'Rookie', avatar: '🧜‍♀️' },
     { name: 'Tom', role: 'Legend', avatar: '🤖' },
+    { name: 'Dan', role: 'Geek', avatar: '👽' },
   ]);
 
 
-  const [floatOffset, setFloatOffset] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setFloatOffset((prev) => (prev + 1) % 360);
-    }, 50);
-    return () => clearInterval(interval);
-  }, []);
-
-  const floatY = Math.sin(floatOffset * 0.05) * 20;
 
   return (
     <div className={styles.containers}>
@@ -42,16 +35,8 @@ export default function Home() {
       <div className={styles.mainContent}>
         <section className={styles.heroSection}>
           <div className={styles.heroInner}>
-            <div className={styles.logoContainer}>
-              <h1 className={styles.logo}>Trivib</h1>
-            </div>
-
-            <div
-              className={styles.alienContainer}
-              style={{ transform: `translateY(${floatY}px)` }}
-            >
-              <div className={styles.alien}>👽</div>
-              <div className={styles.alienGlow}>👽</div>
+            <div className={styles.logoContainers}>
+             <CurvedTitle />
             </div>
 
             <div className={styles.tagline}>
@@ -60,9 +45,6 @@ export default function Home() {
               <span className={styles.taglineGradient}>Play to Win.</span>
             </div>
 
-            {/* <p className={styles.subtitle}>
-              Challenge your knowledge and compete with players worldwide in this fun, fast-paced trivia games, and earn cash-backs too!
-            </p> */}
 
             <div className={styles.buttonContainer}>
               <Link href="/download/iphone" className={styles.downloadBtn}>
@@ -94,6 +76,9 @@ export default function Home() {
 
         <section className={styles.socialProofSection}>
           <h3 className={styles.socialProofTitle}>Join the Trivib Community</h3>
+             {/* <p className={styles.subtitle}>
+              Challenge your knowledge and compete with players worldwide in this fun, fast-paced trivia games, and earn cash-backs too!
+            </p> */}
           <div className={styles.carouselContainer}>
             <div className={styles.carousel}>
               {[...recentUsers, ...recentUsers].map((user, index) => (
@@ -111,7 +96,6 @@ export default function Home() {
               ))}
             </div>
           </div>
-
         </section>
       </div>
     </div>

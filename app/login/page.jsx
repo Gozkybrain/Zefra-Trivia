@@ -13,7 +13,7 @@ import { useAuth } from "@/components/AuthProvider";
 import style from "./login.module.css";
 import styles from "../page.module.css";
 
-const emojiOptions = ["👽", "🤖", "👾", "👻", "🧠", "🛸", "🎮", "🚀"];
+const emojiOptions = ["👽", "👨‍🚀", "🥷", "🧙‍♂️", "🕵️‍♀️", "🧛‍♂️", "🧚‍♀️", "🦸‍♂️"];
 
 export default function AuthPage() {
   const [activeTab, setActiveTab] = useState("login");
@@ -106,7 +106,7 @@ export default function AuthPage() {
   };
 
   return (
-    <div className={styles.container}>
+    <div className={styles.containers}>
       {/* Background Glow */}
       <div className={styles.stars}></div>
       <div className={styles.starsSlow}></div>
@@ -188,8 +188,8 @@ export default function AuthPage() {
                           style={{
                             fontSize: "1.5rem",
                             padding: "6px",
-                            borderRadius: "50%",
-                            border: avatar === e ? "2px solid #22d3ee" : "1px solid #444",
+                            borderRadius: "10%",
+                            border: avatar === e ? "2px solid #22d3ee" : "1px solid #444 ",
                             background: "transparent",
                             cursor: "pointer",
                           }}

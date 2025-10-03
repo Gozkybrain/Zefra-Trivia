@@ -79,7 +79,7 @@
 .mainContent {
   position: relative;
   z-index: 10;
-  min-height: 100vh;
+  /* min-height: 100vh; */
   display: flex;
   flex-direction: column;
 }
@@ -109,18 +109,14 @@
   font-size: 96px;
   font-weight: 900;
   margin: 10px;
-
   background: linear-gradient(90deg, #34d399, #22d3ee);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-
   text-shadow:
-    0 0 10px rgba(52, 211, 153, 0.4),  /* Soft green glow */
-    0 0 10px rgba(34, 211, 238, 0.3); /* Soft cyan glow */
+    0 0 10px rgba(52, 211, 153, 0.4), 
+    0 0 10px rgba(34, 211, 238, 0.3); 
 }
-
-
 
 .alienContainer {
   position: relative;
@@ -130,7 +126,7 @@
 }
 
 .alien {
-  font-size: 120px;
+  font-size: 180px;
   position: relative;
   z-index: 2;
   animation: alienFloat 3s ease-in-out infinite;
@@ -158,7 +154,7 @@
 }
 
 .tagline {
-  font-size: 48px;
+  font-size: 70px;
   font-weight: bold;
   margin: 0 0 16px 0;
   color: white;
@@ -179,6 +175,7 @@
   color: #f4f4f4;
   margin: 0 0 48px 0;
   max-width: 800px;
+  text-align: center;
   margin-left: auto;
   margin-right: auto;
 }
@@ -226,7 +223,7 @@
 
 .socialProofTitle {
   text-align: center;
-  font-size: 16px;
+  font-size: 24px;
   font-weight: 600;
   color: #94a3b8;
   text-transform: uppercase;
@@ -237,7 +234,6 @@
 .carouselContainer {
   position: relative;
   overflow: hidden;
-  max-width: 1400px;
   margin: 0 auto;
 }
 
@@ -333,11 +329,11 @@
 
   .alien,
   .alienGlow {
-    font-size: 80px;
+    font-size: 120px;
   }
 
   .tagline {
-    font-size: 32px;
+    font-size: 40px;
   }
 
   .subtitle {

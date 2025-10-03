@@ -7,7 +7,11 @@ export default function Header() {
   return (
     <header style={styles.header}>
       <Link href="/" style={styles.logoLink}>
-        <h1 style={styles.logo}>Trivib</h1>
+        <img
+          src="/trivibv7.png"
+          alt="Trivib Logo"
+          style={styles.logoImage}
+        />
       </Link>
     </header>
   );
@@ -15,24 +19,19 @@ export default function Header() {
 
 const styles = {
   header: {
-    padding: "10px",
+    padding: "20px",
     textAlign: "left",
+    position: "relative",
+    zIndex: 999999,
   },
   logoLink: {
     textDecoration: "none",
     display: "inline-block",
   },
-  logo: {
-    fontSize: "36px",
-    fontWeight: 900,
+  logoImage: {
+    height: "70px",
+    width: "auto",
     margin: "10px",
-    background: "linear-gradient(90deg, #34d399, #22d3ee)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
-    backgroundClip: "text",
-    textShadow: `
-      0 0 10px rgba(52, 211, 153, 0.4),
-      0 0 10px rgba(34, 211, 238, 0.3)
-    `,
+    cursor: "pointer",
   },
 };

@@ -36,15 +36,52 @@ export default function Home() {
         <section className={styles.heroSection}>
           <div className={styles.heroInner}>
             <div className={styles.logoContainers}>
-             <CurvedTitle />
+              <CurvedTitle />
             </div>
 
             <div className={styles.tagline}>
-              Test Your Brain
+              {"Test Your Brain".split("").map((char, index) => {
+                if (char === " ") {
+                  return (
+                    <span
+                      key={index}
+                      style={{ display: "inline-block", width: "12px" }}
+                    />
+                  );
+                }
+                return (
+                  <span
+                    key={index}
+                    className={styles.char}
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
+                    {char}
+                  </span>
+                );
+              })}
               <br />
-              <span className={styles.taglineGradient}>Play to Win.</span>
+              <span className={styles.taglineGradient}>
+                {"Play to Win.".split("").map((char, index) => {
+                  if (char === " ") {
+                    return (
+                      <span
+                        key={index}
+                        style={{ display: "inline-block", width: "12px" }}
+                      />
+                    );
+                  }
+                  return (
+                    <span
+                      key={index}
+                      className={styles.charGradient}
+                      style={{ animationDelay: `${index * 0.1}s` }}
+                    >
+                      {char}
+                    </span>
+                  );
+                })}
+              </span>
             </div>
-
 
             <div className={styles.buttonContainer}>
               <Link href="/download/iphone" className={styles.downloadBtn}>
@@ -76,7 +113,7 @@ export default function Home() {
 
         <section className={styles.socialProofSection}>
           <h3 className={styles.socialProofTitle}>Join the Trivib Community</h3>
-             {/* <p className={styles.subtitle}>
+          {/* <p className={styles.subtitle}>
               Challenge your knowledge and compete with players worldwide in this fun, fast-paced trivia games, and earn cash-backs too!
             </p> */}
           <div className={styles.carouselContainer}>

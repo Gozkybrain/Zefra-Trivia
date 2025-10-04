@@ -114,8 +114,8 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-shadow:
-    0 0 10px rgba(52, 211, 153, 0.4), 
-    0 0 10px rgba(34, 211, 238, 0.3); 
+    0 0 10px rgba(52, 211, 153, 0.4),
+    0 0 10px rgba(34, 211, 238, 0.3);
 }
 
 .alienContainer {
@@ -153,21 +153,73 @@
   }
 }
 
+@keyframes snakeWobble {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  25% {
+    transform: translateY(-4px) rotate(-2deg);
+  }
+
+  50% {
+    transform: translateY(4px) rotate(2deg);
+  }
+
+  75% {
+    transform: translateY(-2px) rotate(-1deg);
+  }
+
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
 .tagline {
   font-size: 70px;
   font-weight: bold;
   margin: 0 0 16px 0;
   color: white;
   line-height: 1.2;
+  text-align: center;
+  text-shadow:
+    1px 1px 0 #1a1a1a,
+    2px 2px 0 #0d0d0d,
+    0 0 10px rgba(0, 0, 0, 0.4);
 }
 
+/* Apply gradient and shadow to the second line */
 .taglineGradient {
+  display: inline-block;
+  font-size: 70px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* Characters for main tagline (white with 1-time wobble) */
+.char {
+  display: inline-block;
+  animation: snakeWobble 1.5s ease-in-out 1;
+}
+
+/* Characters for gradient line (infinite wobble + gradient) */
+.charGradient {
+  display: inline-block;
   background: linear-gradient(90deg, #34d399, #22d3ee);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  text-shadow:
+    1px 1px 0 #0f766e,
+    2px 2px 0 #0e7490,
+    0 0 2px rgba(34, 211, 238, 0.5),
+    0 0 20px rgba(34, 211, 238, 0.4);
+  animation: snakeWobble 2.5s ease-in-out infinite;
 }
+
+
 
 .subtitle {
   font-size: 20px;
@@ -314,9 +366,9 @@
 
 
 @media (max-width: 1078px) {
-.mainContent {
-  min-height: 100vh;
-}
+  .mainContent {
+    min-height: 100vh;
+  }
 }
 
 @media (min-width: 640px) {

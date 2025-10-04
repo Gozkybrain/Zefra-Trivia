@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   createUserWithEmailAndPassword,
@@ -8,7 +9,7 @@ import {
   sendPasswordResetEmail,
   updateProfile,
 } from "firebase/auth";
-import { auth } from "@/lib/firebase"; 
+import { auth } from "@/lib/firebase";
 import { useAuth } from "@/components/AuthProvider";
 import style from "./login.module.css";
 import styles from "../page.module.css";
@@ -184,6 +185,33 @@ export default function AuthPage() {
               style={{ maxWidth: 400, margin: "0 auto" }}
             >
 
+              <label htmlFor="">Email Address:</label>
+              <input
+                type="email"
+                placeholder="johndoe@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className={style.input}
+              />
+
+
+              {activeTab !== "forgot" && (
+                // * hide if forgot password is active
+                <>
+                  <label htmlFor="">Password:</label>
+                  <input
+                    type="password"
+                    placeholder="**********"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className={style.input}
+                  />
+                </>
+              )}
+
+
               {(activeTab === "register") && (
                 // * show when register tab is active
                 <>
@@ -201,7 +229,7 @@ export default function AuthPage() {
                     <label>
                       Choose your alien:
                     </label>
-                    <div style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
+                    <div style={{ display: "flex", gap: "8px", justifyContent: "center", marginBottom: "1rem" }}>
                       {emojiOptions.map((e) => (
                         <button
                           key={e}
@@ -220,32 +248,10 @@ export default function AuthPage() {
                         </button>
                       ))}
                     </div>
+                    <Link href="/terms" className={style.link}>
+                      I agree to the terms and conditions
+                    </Link>
                   </div>
-                </>
-              )}
-
-              <label htmlFor="">Email Address:</label>
-              <input
-                type="email"
-                placeholder="johndoe@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className={style.input}
-              />
-
-              {activeTab !== "forgot" && (
-                // * Show if forgot password is active
-                <>
-                  <label htmlFor="">Password:</label>
-                  <input
-                    type="password"
-                    placeholder="**********"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    className={style.input}
-                  />
                 </>
               )}
 
@@ -255,7 +261,7 @@ export default function AuthPage() {
                 disabled={loading}
               >
                 {loading
-                // * Switch button based on active tab
+                  // * Switch button based on active tab
                   ? "Please wait..."
                   : activeTab === "login"
                     ? "Log In Account"

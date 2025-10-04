@@ -8,10 +8,14 @@ import {
   sendPasswordResetEmail,
   updateProfile,
 } from "firebase/auth";
-import { auth } from "@/lib/firebase"; // adjust as needed
+import { auth } from "@/lib/firebase"; 
 import { useAuth } from "@/components/AuthProvider";
 import style from "./login.module.css";
 import styles from "../page.module.css";
+import CurvedTitle from "../CurvedTitle";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+
 
 const emojiOptions = ["👽", "👨‍🚀", "🥷", "🧙‍♂️", "🕵️‍♀️", "🧛‍♂️", "🧚‍♀️", "🦸‍♂️"];
 
@@ -25,8 +29,25 @@ export default function AuthPage() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
+
+  // * Recent or Top Users will be fixed with firebase later
+  const [recentUsers] = useState([
+    { name: 'Alex', role: 'Pro', avatar: '👨‍🚀' },
+    { name: 'Sofia', role: 'New', avatar: '🥷' },
+    { name: 'Kenji', role: 'Top Player', avatar: '🧙‍♂️' },
+    { name: 'Emma', role: 'Veteran', avatar: '🕵️‍♀️' },
+    { name: 'Liam', role: 'Champion', avatar: '🧛‍♂️' },
+    { name: 'Zara', role: 'Pro', avatar: '🧚‍♀️' },
+    { name: 'Carlos', role: 'New', avatar: '🦸‍♂️' },
+    { name: 'Nina', role: 'Top Player', avatar: '🧟‍♀️' },
+    { name: 'Maya', role: 'Rookie', avatar: '🧜‍♀️' },
+    { name: 'Tom', role: 'Legend', avatar: '🤖' },
+    { name: 'Dan', role: 'Geek', avatar: '👽' },
+  ]);
+
   const { user } = useAuth();
   const router = useRouter();
+
 
   useEffect(() => {
     if (user) {
@@ -42,6 +63,8 @@ export default function AuthPage() {
     setMessage("");
   };
 
+
+  // * handle login function
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
@@ -56,24 +79,46 @@ export default function AuthPage() {
     }
   };
 
+
+  // * handle registration function
   const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
+
     try {
+      // 1. Create the user with email/password
       const userCred = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(userCred.user, {
+      const user = userCred.user;
+
+      // 2. Update Auth profile (for UI purposes)
+      await updateProfile(user, {
         displayName: username,
         photoURL: avatar,
       });
+
+      // 3. Store user info in Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        email: user.email,
+        username: username,
+        avatar: avatar,
+        createdAt: new Date(),
+        role: "user",
+      });
+
+      // 4. Redirect
       router.push("/dashboard");
     } catch (err) {
       handleAuthError(err);
     } finally {
       setLoading(false);
     }
+    // * Update with Logic to send welcome email with nodemailer
   };
 
+
+  // * handle reset password logic
   const handleResetPassword = async (e) => {
     e.preventDefault();
     setError("");
@@ -89,21 +134,27 @@ export default function AuthPage() {
     }
   };
 
+  // * handle errors from authentication
   const handleAuthError = (err) => {
-    if (err.code === "auth/email-already-in-use") {
+    const code = err?.code?.toLowerCase() || "";
+
+    if (code.includes("email-already-in-use")) {
       setError("Email already in use.");
-    } else if (err.code === "auth/invalid-email") {
-      setError("Invalid email.");
-    } else if (err.code === "auth/weak-password") {
+    } else if (code.includes("invalid-email")) {
+      setError("Invalid email address.");
+    } else if (code.includes("weak-password")) {
       setError("Password should be at least 6 characters.");
-    } else if (err.code === "auth/user-not-found") {
-      setError("User not found.");
-    } else if (err.code === "auth/wrong-password") {
+    } else if (code.includes("user-not-found")) {
+      setError("No account found with this email.");
+    } else if (code.includes("wrong-password")) {
       setError("Incorrect password.");
+    } else if (code.includes("too-many-requests")) {
+      setError("Too many login attempts. Try again later.");
     } else {
-      setError("Something went wrong.");
+      setError("Error: Please check details and try again.");
     }
   };
+
 
   return (
     <div className={styles.containers}>
@@ -117,66 +168,37 @@ export default function AuthPage() {
       <div className={styles.mainContent}>
         <div className={styles.heroSection}>
           <div className={styles.heroInner}>
-            <div className={styles.alienContainer}>
-              <div className={styles.alienGlow}>👾</div>
-              <div className={styles.alien}>👾</div>
+
+            <CurvedTitle />
+            <div className={styles.tagline}>
+              <p className={styles.taglineGradient}>Ready to Trivia?</p>
             </div>
-
-            <h1 className={styles.logo}>Trivib</h1>
-            <p className={styles.subtitle}>Log in. Sign up. Beam up.</p>
-
-            <div className={styles.buttonContainer}>
-              <button
-                onClick={() => {
-                  resetStates();
-                  setActiveTab("login");
-                }}
-                className={styles.downloadBtn}
-              >
-                Login
-              </button>
-              <button
-                onClick={() => {
-                  resetStates();
-                  setActiveTab("register");
-                }}
-                className={styles.downloadBtn}
-              >
-                Register
-              </button>
-              <button
-                onClick={() => {
-                  resetStates();
-                  setActiveTab("forgot");
-                }}
-                className={styles.downloadBtn}
-              >
-                Forgot Password
-              </button>
-            </div>
-
             <form
               onSubmit={
                 activeTab === "login"
                   ? handleLogin
                   : activeTab === "register"
-                  ? handleRegister
-                  : handleResetPassword
+                    ? handleRegister
+                    : handleResetPassword
               }
               style={{ maxWidth: 400, margin: "0 auto" }}
             >
+
               {(activeTab === "register") && (
+                // * show when register tab is active
                 <>
+                  <label htmlFor="">Username:</label>
                   <input
                     type="text"
-                    placeholder="Username"
+                    placeholder="eg. Zefra4real"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     required
                     className={style.input}
                   />
+
                   <div style={{ marginBottom: "1rem" }}>
-                    <label style={{ color: "#fff", marginBottom: "8px", display: "block" }}>
+                    <label>
                       Choose your alien:
                     </label>
                     <div style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
@@ -202,45 +224,129 @@ export default function AuthPage() {
                 </>
               )}
 
+              <label htmlFor="">Email Address:</label>
               <input
                 type="email"
-                placeholder="Email"
+                placeholder="johndoe@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className={style.input}
               />
+
               {activeTab !== "forgot" && (
-                <input
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className={style.input}
-                />
+                // * Show if forgot password is active
+                <>
+                  <label htmlFor="">Password:</label>
+                  <input
+                    type="password"
+                    placeholder="**********"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className={style.input}
+                  />
+                </>
               )}
 
               <button
                 type="submit"
-                className={styles.downloadBtn}
+                className={`${styles.downloadBtn} ${style.submitBtn}`}
                 disabled={loading}
               >
                 {loading
+                // * Switch button based on active tab
                   ? "Please wait..."
                   : activeTab === "login"
-                  ? "Log In"
-                  : activeTab === "register"
-                  ? "Register"
-                  : "Send Reset Link"}
+                    ? "Log In Account"
+                    : activeTab === "register"
+                      ? "Register an Account"
+                      : "Send Reset Link"}
               </button>
 
               {error && <p style={{ color: "red", marginTop: "1rem" }}>{error}</p>}
               {message && <p style={{ color: "lightgreen", marginTop: "1rem" }}>{message}</p>}
+
+
+              <div className={style.btnContainer}>
+                {activeTab !== "login" && (
+                  // * login tab selection
+                  <button
+                    onClick={() => {
+                      resetStates();
+                      setActiveTab("login");
+                    }}
+                    className={styles.downloadBtn}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" style={{ marginRight: "8px" }}>
+                      <path d="M16 21v-2a4 4 0 0 0-8 0v2" />
+                      <circle cx="12" cy="7" r="4" />
+                    </svg>
+                    Login
+                  </button>
+                )}
+                {activeTab !== "register" && (
+                  // * registration tab selection
+                  <button
+                    onClick={() => {
+                      resetStates();
+                      setActiveTab("register");
+                    }}
+                    className={styles.downloadBtn}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" style={{ marginRight: "8px" }}>
+                      <circle cx="12" cy="7" r="4" />
+                      <path d="M16 21v-2a4 4 0 0 0-8 0v2" />
+                      <line x1="18" y1="8" x2="24" y2="8" />
+                      <line x1="21" y1="5" x2="21" y2="11" />
+                    </svg>
+                    Register
+                  </button>
+                )}
+                {activeTab !== "forgot" && (
+                  // * forgot password tab selection
+                  <button
+                    onClick={() => {
+                      resetStates();
+                      setActiveTab("forgot");
+                    }}
+                    className={styles.downloadBtn}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" style={{ marginRight: "8px" }}>
+                      <circle cx="15" cy="15" r="4" />
+                      <path d="M10 14v-4h4" />
+                      <line x1="10" y1="10" x2="14" y2="6" />
+                    </svg>
+                    Forgot Pass?
+                  </button>
+                )}
+              </div>
+
             </form>
           </div>
         </div>
       </div>
+
+      <section className={styles.socialProofSection}>
+        <h3 className={styles.socialProofTitle}>Join the Trivib Community</h3>
+        <div className={styles.carouselContainer}>
+          <div className={styles.carousel}>
+            {[...recentUsers, ...recentUsers].map((user, index) => (
+              <div key={index} className={styles.userCard}>
+                <div className={styles.userCardInner}>
+                  <div className={styles.userAvatar}>{user.avatar}</div>
+                  <div className={styles.userInfo}>
+                    <p className={styles.userName}>
+                      {user.name}
+                    </p>
+                    <p className={styles.userRole}>{user.role}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

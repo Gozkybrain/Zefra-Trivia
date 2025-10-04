@@ -119,7 +119,6 @@ We use **Nodemailer** for transactional emails.
 | Event                | Recipient | Template File                  | Trigger Point / Description |
 |----------------------|-----------|--------------------------------|----------------------------|
 | User Registration    | User      | `welcomeUser.js`               | After `/api/auth/register` success |
-| User Registration    | Admin     | `notifyAdmin.js`               | After `/api/auth/register` success |
 | Password Reset       | User      | `passwordReset.js`             | After user requests password reset |
 | Deposit Success      | User      | `depositSuccess.js`            | After payment webhook confirms deposit |
 | Withdrawal Request   | Admin     | `withdrawalRequest.js`         | After user submits withdrawal request |

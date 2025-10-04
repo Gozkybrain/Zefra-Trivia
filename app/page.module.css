@@ -166,6 +166,7 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 
 .subtitle {
@@ -309,6 +310,13 @@
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+
+@media (max-width: 1078px) {
+.mainContent {
+  min-height: 100vh;
+}
 }
 
 @media (min-width: 640px) {

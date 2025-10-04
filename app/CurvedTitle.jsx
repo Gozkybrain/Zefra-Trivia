@@ -67,7 +67,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: '-20px',
+    // marginTop: '-20px',
   },
   text: {
     filter: `

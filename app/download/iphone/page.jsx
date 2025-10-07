@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import styles from './iphone.module.css';
+import CurvedTitle from '@/app/CurvedTitle';
+
+
 
 export default function IPhoneDownloadPage() {
   const [isIOS, setIsIOS] = useState(false);
@@ -34,6 +37,7 @@ export default function IPhoneDownloadPage() {
     setBubbles(generatedBubbles);
   }, []);
 
+  // handle the install button (scroll)
   const handleInstallClick = () => {
     if (isInstallable) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -41,7 +45,7 @@ export default function IPhoneDownloadPage() {
   };
 
   return (
-    <div className={styles.container}>
+    <div className={styles.containers}>
       <div className={styles.bubbles}>
         {bubbles.map((style, i) => (
           <div key={i} className={styles.bubble} style={style} />
@@ -51,18 +55,18 @@ export default function IPhoneDownloadPage() {
       <div className={styles.content}>
         <div className={styles.hero}>
           <div className={styles.glowOrb}></div>
-          <h1 className={styles.title}>
-            <span className={styles.gradient}>Trivib</span>
-          </h1>
+          <CurvedTitle />
           <p className={styles.subtitle}>Experience the future of trivia gaming</p>
         </div>
 
         {!isIOS ? (
+          // * Show warning message if not IOS Device
           <div className={styles.warningCard}>
             <div className={styles.warningIcon}>⚠️</div>
             <p>This page is optimized for iPhone. Please visit from an iOS device.</p>
           </div>
         ) : !isInSafari ? (
+          // * Show message if not opened in safari browser
           <div className={styles.warningCard}>
             <div className={styles.warningIcon}>🧭</div>
             <h3>Open in Safari</h3>
@@ -74,6 +78,7 @@ export default function IPhoneDownloadPage() {
             </ol>
           </div>
         ) : (
+          // * show steps to manually install from safari on IOS
           <>
             <div className={styles.readyCard}>
               <div className={styles.checkIcon}>✓</div>
@@ -88,8 +93,8 @@ export default function IPhoneDownloadPage() {
                 <div className={styles.stepContent}>
                   <div className={styles.stepIcon}>
                     <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                      <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2"/>
-                      <path d="M12 8v8M8 12h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                      <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2" />
+                      <path d="M12 8v8M8 12h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                     </svg>
                   </div>
                   <div>
@@ -105,8 +110,8 @@ export default function IPhoneDownloadPage() {
                 <div className={styles.stepContent}>
                   <div className={styles.stepIcon}>
                     <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                      <path d="M4 12h16M12 4v8" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                      <rect x="3" y="12" width="18" height="9" rx="2" stroke="currentColor" strokeWidth="2"/>
+                      <path d="M4 12h16M12 4v8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                      <rect x="3" y="12" width="18" height="9" rx="2" stroke="currentColor" strokeWidth="2" />
                     </svg>
                   </div>
                   <div>
@@ -122,8 +127,8 @@ export default function IPhoneDownloadPage() {
                 <div className={styles.stepContent}>
                   <div className={styles.stepIcon}>
                     <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                      <path d="M9 11l3 3 8-8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2"/>
+                      <path d="M9 11l3 3 8-8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2" />
                     </svg>
                   </div>
                   <div>
@@ -141,10 +146,11 @@ export default function IPhoneDownloadPage() {
           </>
         )}
 
+        {/* * extra animation for fancy look */}
         <div className={styles.illustration}>
           <div className={styles.phone}>
             <div className={styles.phoneScreen}>
-              <div className={styles.appIcon}>T</div>
+              <div className={styles.appIcon}>👽</div>
               <div className={styles.scanLines}></div>
             </div>
           </div>

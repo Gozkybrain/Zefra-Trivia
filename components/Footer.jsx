@@ -7,7 +7,10 @@ export default function Footer() {
   return (
     <footer style={styles.footer}>
       <p style={styles.text}>
-        © {new Date().getFullYear()} Trivib. All rights reserved.{" "}
+        © {new Date().getFullYear()} Trivib. All rights reserved.
+         <Link href="/" style={styles.link}>
+         Home
+        </Link> |
         <Link href="/terms" style={styles.link}>
           Terms & Conditions
         </Link>

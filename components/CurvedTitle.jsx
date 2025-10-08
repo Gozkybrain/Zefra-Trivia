@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import styles from './CurvedText.module.css';
+import styles from '../styles/CurvedText.module.css';
 
 export default function CurvedTitle() {
   const [floatOffset, setFloatOffset] = useState(0);

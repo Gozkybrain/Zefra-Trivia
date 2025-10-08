@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import styles from './iphone.module.css';
-import CurvedTitle from '@/app/CurvedTitle';
+import CurvedTitle from '@/components/CurvedTitle';
 
 
 

@@ -1,13 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 import styles from './page.module.css';
 import Link from "next/link";
-import CurvedTitle from './CurvedTitle';
-
+import CurvedTitle from '../components/CurvedTitle';
+import Loader from '@/components/Loader';
 
 export default function Home() {
-  // * Recent or Top Users will be fixed with firebase later
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   const [recentUsers] = useState([
     { name: 'Alex', role: 'Pro', avatar: '👨‍🚀' },
     { name: 'Sofia', role: 'New', avatar: '🥷' },
@@ -22,7 +26,20 @@ export default function Home() {
     { name: 'Dan', role: 'Geek', avatar: '👽' },
   ]);
 
+  // ✅ Listen for auth state
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
 
+  if (loading) {
+    return (
+     <Loader />
+    );
+  }
 
   return (
     <div className={styles.containers}>
@@ -40,46 +57,16 @@ export default function Home() {
             </div>
 
             <div className={styles.tagline}>
-              {"Test Your Brain".split("").map((char, index) => {
-                if (char === " ") {
-                  return (
-                    <span
-                      key={index}
-                      style={{ display: "inline-block", width: "12px" }}
-                    />
-                  );
-                }
-                return (
-                  <span
-                    key={index}
-                    className={styles.char}
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                  >
-                    {char}
-                  </span>
-                );
-              })}
+              {"Test Your Brain".split("").map((char, index) => (
+                char === " " ? <span key={index} style={{ display: "inline-block", width: "12px" }} /> :
+                  <span key={index} className={styles.char} style={{ animationDelay: `${index * 0.1}s` }}>{char}</span>
+              ))}
               <br />
               <span className={styles.taglineGradient}>
-                {"Play to Win.".split("").map((char, index) => {
-                  if (char === " ") {
-                    return (
-                      <span
-                        key={index}
-                        style={{ display: "inline-block", width: "12px" }}
-                      />
-                    );
-                  }
-                  return (
-                    <span
-                      key={index}
-                      className={styles.charGradient}
-                      style={{ animationDelay: `${index * 0.1}s` }}
-                    >
-                      {char}
-                    </span>
-                  );
-                })}
+                {"Play to Win.".split("").map((char, index) => (
+                  char === " " ? <span key={index} style={{ display: "inline-block", width: "12px" }} /> :
+                    <span key={index} className={styles.charGradient} style={{ animationDelay: `${index * 0.1}s` }}>{char}</span>
+                ))}
               </span>
             </div>
 
@@ -99,23 +86,33 @@ export default function Home() {
                 Download for Android
               </Link>
 
-              <Link href="/login" className={styles.downloadBtn}>
-                <svg className={styles.icon} viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <circle cx="12" cy="12" r="10" strokeWidth={2} />
-                  <line x1="2" y1="12" x2="22" y2="12" strokeWidth={2} />
-                  <path strokeWidth={2} d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                </svg>
-                Use Web Version
-              </Link>
+              {/* ✅ Dynamic button */}
+              {user ? (
+                <Link href="/dashboard" className={styles.downloadBtn}>
+                  <svg className={styles.icon} viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M9 12l2 2 4-4" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M16 6l-4-4-4 4" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M12 2v14" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  Go to Dashboard
+                </Link>
+              ) : (
+                <Link href="/login" className={styles.downloadBtn}>
+                  <svg className={styles.icon} viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="12" cy="12" r="10" strokeWidth={2} />
+                    <line x1="2" y1="12" x2="22" y2="12" strokeWidth={2} />
+                    <path strokeWidth={2} d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                  </svg>
+                  Use Web Version
+                </Link>
+              )}
             </div>
           </div>
         </section>
 
         <section className={styles.socialProofSection}>
           <h3 className={styles.socialProofTitle}>Join the Trivib Community</h3>
-          {/* <p className={styles.subtitle}>
-              Challenge your knowledge and compete with players worldwide in this fun, fast-paced trivia games, and earn cash-backs too!
-            </p> */}
           <div className={styles.carouselContainer}>
             <div className={styles.carousel}>
               {[...recentUsers, ...recentUsers].map((user, index) => (

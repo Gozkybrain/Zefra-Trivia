@@ -13,7 +13,7 @@ import { auth } from "@/lib/firebase";
 import { useAuth } from "@/components/AuthProvider";
 import style from "./login.module.css";
 import styles from "../page.module.css";
-import CurvedTitle from "../CurvedTitle";
+import CurvedTitle from "../../components/CurvedTitle";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 

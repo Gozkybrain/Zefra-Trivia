@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import styles from './android.module.css';
-import CurvedTitle from '@/app/CurvedTitle';
+import CurvedTitle from '@/components/CurvedTitle';
 
 
 export default function AndroidDownloadPage() {

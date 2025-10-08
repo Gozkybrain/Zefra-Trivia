@@ -73,6 +73,7 @@ export default function AuthPage() {
     setMessage("");
   };
 
+
   // * handle login function
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -88,41 +89,71 @@ export default function AuthPage() {
     }
   };
 
-  // * handle registration function
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+
+// * handle registration function
+const handleRegister = async (e) => {
+  e.preventDefault();
+  setError("");
+  setLoading(true);
+
+  try {
+    // 1️⃣ Create user in Firebase Auth
+    const userCred = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCred.user;
+
+    // 2️⃣ Update their profile (for display name & avatar)
+    await updateProfile(user, {
+      displayName: username,
+      photoURL: avatar || "👽",
+    });
+
+    // 3️⃣ Save user info in Firestore
+    await setDoc(doc(db, "users", user.uid), {
+      uid: user.uid,
+      email: user.email,
+      username,
+      avatar: avatar || "👽",
+      createdAt: new Date(),
+      role: "user",
+    });
+
+    // 4️⃣ Trigger welcome + admin emails
     try {
-      // 1. Create the user with email/password
-      const userCred = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCred.user;
-
-      // 2. Update Auth profile (for UI purposes)
-      await updateProfile(user, {
-        displayName: username,
-        photoURL: avatar,
+      const res = await fetch("/api/sendEmails", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email: user.email }),
       });
 
-      // 3. Store user info in Firestore
-      await setDoc(doc(db, "users", user.uid), {
-        uid: user.uid,
-        email: user.email,
-        username: username,
-        avatar: avatar,
-        createdAt: new Date(),
-        role: "user",
-      });
+      // safer parse: read raw response in case it's not valid JSON
+      const raw = await res.text();
+      let data;
+      try {
+        data = JSON.parse(raw);
+      } catch (err) {
+        throw new Error(`Invalid JSON response from email API: ${raw}`);
+      }
 
-      // 4. Redirect
-      router.push("/dashboard");
+      if (data.ok) {
+        console.log("📨 Emails sent successfully!");
+      } else {
+        console.error("❌ Email sending failed:", data?.error || "Unknown error");
+      }
     } catch (err) {
-      handleAuthError(err);
-    } finally {
-      setLoading(false);
+      console.error("❌ Failed to trigger email API:", err.message || err);
     }
-    // * Update with Logic to send welcome email with nodemailer
-  };
+
+    // 5️⃣ Redirect to dashboard
+    await router.push("/dashboard");
+
+  } catch (err) {
+    handleAuthError(err);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 
   // * handle reset password logic
   const handleResetPassword = async (e) => {
@@ -174,8 +205,8 @@ export default function AuthPage() {
                 activeTab === "login"
                   ? handleLogin
                   : activeTab === "register"
-                  ? handleRegister
-                  : handleResetPassword
+                    ? handleRegister
+                    : handleResetPassword
               }
               style={{ maxWidth: 400, margin: "0 auto" }}
             >
@@ -251,10 +282,10 @@ export default function AuthPage() {
                 {loading
                   ? "Please wait..."
                   : activeTab === "login"
-                  ? "Log In Account"
-                  : activeTab === "register"
-                  ? "Register an Account"
-                  : "Send Reset Link"}
+                    ? "Log In Account"
+                    : activeTab === "register"
+                      ? "Register an Account"
+                      : "Send Reset Link"}
               </button>
 
               {error && <p style={{ color: "red", marginTop: "1rem" }}>{error}</p>}

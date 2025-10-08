@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { auth, db } from '@/lib/firebase';
+import { collection, getDocs, query, limit } from 'firebase/firestore';
 import styles from './page.module.css';
 import Link from "next/link";
 import CurvedTitle from '../components/CurvedTitle';
@@ -11,22 +12,10 @@ import Loader from '@/components/Loader';
 export default function Home() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [recentUsers, setRecentUsers] = useState([]);
+  const [usersLoading, setUsersLoading] = useState(true);
 
-  const [recentUsers] = useState([
-    { name: 'Alex', role: 'Pro', avatar: '👨‍🚀' },
-    { name: 'Sofia', role: 'New', avatar: '🥷' },
-    { name: 'Kenji', role: 'Top Player', avatar: '🧙‍♂️' },
-    { name: 'Emma', role: 'Veteran', avatar: '🕵️‍♀️' },
-    { name: 'Liam', role: 'Champion', avatar: '🧛‍♂️' },
-    { name: 'Zara', role: 'Pro', avatar: '🧚‍♀️' },
-    { name: 'Carlos', role: 'New', avatar: '🦸‍♂️' },
-    { name: 'Nina', role: 'Top Player', avatar: '🧟‍♀️' },
-    { name: 'Maya', role: 'Rookie', avatar: '🧜‍♀️' },
-    { name: 'Tom', role: 'Legend', avatar: '🤖' },
-    { name: 'Dan', role: 'Geek', avatar: '👽' },
-  ]);
-
-  // ✅ Listen for auth state
+  // Listen for auth state
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -35,11 +24,29 @@ export default function Home() {
     return () => unsubscribe();
   }, []);
 
-  if (loading) {
-    return (
-     <Loader />
-    );
-  }
+  // Fetch random 10 users from Firestore
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setUsersLoading(true);
+        const q = query(collection(db, 'users'), limit(10));
+        const snapshot = await getDocs(q);
+        const usersData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setRecentUsers(usersData);
+      } catch (error) {
+        console.error('🔥 Error fetching users:', error);
+      } finally {
+        setUsersLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  if (loading) return <Loader />;
 
   return (
     <div className={styles.containers}>
@@ -57,16 +64,26 @@ export default function Home() {
             </div>
 
             <div className={styles.tagline}>
-              {"Test Your Brain".split("").map((char, index) => (
-                char === " " ? <span key={index} style={{ display: "inline-block", width: "12px" }} /> :
-                  <span key={index} className={styles.char} style={{ animationDelay: `${index * 0.1}s` }}>{char}</span>
-              ))}
+              {"Test Your Brain".split("").map((char, index) =>
+                char === " " ? (
+                  <span key={index} style={{ display: "inline-block", width: "12px" }} />
+                ) : (
+                  <span key={index} className={styles.char} style={{ animationDelay: `${index * 0.1}s` }}>
+                    {char}
+                  </span>
+                )
+              )}
               <br />
               <span className={styles.taglineGradient}>
-                {"Play to Win.".split("").map((char, index) => (
-                  char === " " ? <span key={index} style={{ display: "inline-block", width: "12px" }} /> :
-                    <span key={index} className={styles.charGradient} style={{ animationDelay: `${index * 0.1}s` }}>{char}</span>
-                ))}
+                {"Play to Win.".split("").map((char, index) =>
+                  char === " " ? (
+                    <span key={index} style={{ display: "inline-block", width: "12px" }} />
+                  ) : (
+                    <span key={index} className={styles.charGradient} style={{ animationDelay: `${index * 0.1}s` }}>
+                      {char}
+                    </span>
+                  )
+                )}
               </span>
             </div>
 
@@ -111,24 +128,34 @@ export default function Home() {
           </div>
         </section>
 
+        {/* ✅ Social Proof Section */}
         <section className={styles.socialProofSection}>
           <h3 className={styles.socialProofTitle}>Join the Trivib Community</h3>
           <div className={styles.carouselContainer}>
-            <div className={styles.carousel}>
-              {[...recentUsers, ...recentUsers].map((user, index) => (
-                <div key={index} className={styles.userCard}>
-                  <div className={styles.userCardInner}>
-                    <div className={styles.userAvatar}>{user.avatar}</div>
-                    <div className={styles.userInfo}>
-                      <p className={styles.userName}>
-                        {user.name}
-                      </p>
-                      <p className={styles.userRole}>{user.role}</p>
+            {usersLoading ? (
+              <div className={styles.usersLoader}><Loader /></div>
+            ) : (
+              <div className={styles.carousel}>
+                {[...recentUsers, ...recentUsers, ...recentUsers].map((user, index) => (
+                  <div key={index} className={styles.userCard}>
+                    <div className={styles.userCardInner}>
+                      <div className={styles.userAvatar}>
+                        {user.avatar ? (
+                          <span className={styles.avatarEmoji}>{user.avatar}</span>
+                        ) : (
+                          <div className={styles.avatarFallback}>
+                            {(user.username || 'A')[0].toUpperCase()}
+                          </div>
+                        )}
+                      </div>
+                      <div className={styles.userInfo}>
+                        <p className={styles.userName}>{user.username || "Anonymous"}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       </div>

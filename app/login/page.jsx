@@ -9,16 +9,17 @@ import {
   sendPasswordResetEmail,
   updateProfile,
 } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import { useAuth } from "@/components/AuthProvider";
 import style from "./login.module.css";
 import styles from "../page.module.css";
 import CurvedTitle from "../../components/CurvedTitle";
-import { doc, setDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { doc, setDoc, collection, getDocs, query, limit } from "firebase/firestore";
+import Loader from "@/components/Loader";
 
 
 const emojiOptions = ["👽", "👨‍🚀", "🥷", "🧙‍♂️", "🕵️‍♀️", "🧛‍♂️", "🧚‍♀️", "🦸‍♂️"];
+
 
 export default function AuthPage() {
   const [activeTab, setActiveTab] = useState("login");
@@ -30,31 +31,39 @@ export default function AuthPage() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-
-  // * Recent or Top Users will be fixed with firebase later
-  const [recentUsers] = useState([
-    { name: 'Alex', role: 'Pro', avatar: '👨‍🚀' },
-    { name: 'Sofia', role: 'New', avatar: '🥷' },
-    { name: 'Kenji', role: 'Top Player', avatar: '🧙‍♂️' },
-    { name: 'Emma', role: 'Veteran', avatar: '🕵️‍♀️' },
-    { name: 'Liam', role: 'Champion', avatar: '🧛‍♂️' },
-    { name: 'Zara', role: 'Pro', avatar: '🧚‍♀️' },
-    { name: 'Carlos', role: 'New', avatar: '🦸‍♂️' },
-    { name: 'Nina', role: 'Top Player', avatar: '🧟‍♀️' },
-    { name: 'Maya', role: 'Rookie', avatar: '🧜‍♀️' },
-    { name: 'Tom', role: 'Legend', avatar: '🤖' },
-    { name: 'Dan', role: 'Geek', avatar: '👽' },
-  ]);
+  const [recentUsers, setRecentUsers] = useState([]);
+  const [loadingUsers, setLoadingUsers] = useState(true);
 
   const { user } = useAuth();
   const router = useRouter();
 
-
+  // Redirect if logged in
   useEffect(() => {
     if (user) {
       router.replace("/dashboard");
     }
   }, [user, router]);
+
+  // Fetch dynamic users from Firestore
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setLoadingUsers(true);
+        const q = query(collection(db, "users"), limit(20));
+        const snapshot = await getDocs(q);
+        const usersData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setRecentUsers(usersData);
+      } catch (error) {
+        console.error("🔥 Error fetching users:", error);
+      } finally {
+        setLoadingUsers(false);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   const resetStates = () => {
     setEmail("");
@@ -63,7 +72,6 @@ export default function AuthPage() {
     setError("");
     setMessage("");
   };
-
 
   // * handle login function
   const handleLogin = async (e) => {
@@ -80,13 +88,11 @@ export default function AuthPage() {
     }
   };
 
-
   // * handle registration function
   const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-
     try {
       // 1. Create the user with email/password
       const userCred = await createUserWithEmailAndPassword(auth, email, password);
@@ -118,7 +124,6 @@ export default function AuthPage() {
     // * Update with Logic to send welcome email with nodemailer
   };
 
-
   // * handle reset password logic
   const handleResetPassword = async (e) => {
     e.preventDefault();
@@ -138,24 +143,14 @@ export default function AuthPage() {
   // * handle errors from authentication
   const handleAuthError = (err) => {
     const code = err?.code?.toLowerCase() || "";
-
-    if (code.includes("email-already-in-use")) {
-      setError("Email already in use.");
-    } else if (code.includes("invalid-email")) {
-      setError("Invalid email address.");
-    } else if (code.includes("weak-password")) {
-      setError("Password should be at least 6 characters.");
-    } else if (code.includes("user-not-found")) {
-      setError("No account found with this email.");
-    } else if (code.includes("wrong-password")) {
-      setError("Incorrect password.");
-    } else if (code.includes("too-many-requests")) {
-      setError("Too many login attempts. Try again later.");
-    } else {
-      setError("Error: Please check details and try again.");
-    }
+    if (code.includes("email-already-in-use")) setError("Email already in use.");
+    else if (code.includes("invalid-email")) setError("Invalid email address.");
+    else if (code.includes("weak-password")) setError("Password should be at least 6 characters.");
+    else if (code.includes("user-not-found")) setError("No account found with this email.");
+    else if (code.includes("wrong-password")) setError("Incorrect password.");
+    else if (code.includes("too-many-requests")) setError("Too many login attempts. Try again later.");
+    else setError("Error: Please check details and try again.");
   };
-
 
   return (
     <div className={styles.containers}>
@@ -169,23 +164,22 @@ export default function AuthPage() {
       <div className={styles.mainContent}>
         <div className={styles.heroSection}>
           <div className={styles.heroInner}>
-
             <CurvedTitle />
             <div className={styles.tagline}>
               <p className={styles.taglineGradient}>Ready to Trivia?</p>
             </div>
+
             <form
               onSubmit={
                 activeTab === "login"
                   ? handleLogin
                   : activeTab === "register"
-                    ? handleRegister
-                    : handleResetPassword
+                  ? handleRegister
+                  : handleResetPassword
               }
               style={{ maxWidth: 400, margin: "0 auto" }}
             >
-
-              <label htmlFor="">Email Address:</label>
+              <label>Email Address:</label>
               <input
                 type="email"
                 placeholder="johndoe@email.com"
@@ -195,11 +189,9 @@ export default function AuthPage() {
                 className={style.input}
               />
 
-
               {activeTab !== "forgot" && (
-                // * hide if forgot password is active
                 <>
-                  <label htmlFor="">Password:</label>
+                  <label>Password:</label>
                   <input
                     type="password"
                     placeholder="**********"
@@ -211,11 +203,9 @@ export default function AuthPage() {
                 </>
               )}
 
-
-              {(activeTab === "register") && (
-                // * show when register tab is active
+              {activeTab === "register" && (
                 <>
-                  <label htmlFor="">Username:</label>
+                  <label>Username:</label>
                   <input
                     type="text"
                     placeholder="eg. Zefra4real"
@@ -226,9 +216,7 @@ export default function AuthPage() {
                   />
 
                   <div style={{ marginBottom: "1rem" }}>
-                    <label>
-                      Choose your alien:
-                    </label>
+                    <label>Choose your alien:</label>
                     <div style={{ display: "flex", gap: "8px", justifyContent: "center", marginBottom: "1rem" }}>
                       {emojiOptions.map((e) => (
                         <button
@@ -261,22 +249,19 @@ export default function AuthPage() {
                 disabled={loading}
               >
                 {loading
-                  // * Switch button based on active tab
                   ? "Please wait..."
                   : activeTab === "login"
-                    ? "Log In Account"
-                    : activeTab === "register"
-                      ? "Register an Account"
-                      : "Send Reset Link"}
+                  ? "Log In Account"
+                  : activeTab === "register"
+                  ? "Register an Account"
+                  : "Send Reset Link"}
               </button>
 
               {error && <p style={{ color: "red", marginTop: "1rem" }}>{error}</p>}
               {message && <p style={{ color: "lightgreen", marginTop: "1rem" }}>{message}</p>}
 
-
               <div className={style.btnContainer}>
                 {activeTab !== "login" && (
-                  // * login tab selection
                   <button
                     onClick={() => {
                       resetStates();
@@ -284,15 +269,10 @@ export default function AuthPage() {
                     }}
                     className={styles.downloadBtn}
                   >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" style={{ marginRight: "8px" }}>
-                      <path d="M16 21v-2a4 4 0 0 0-8 0v2" />
-                      <circle cx="12" cy="7" r="4" />
-                    </svg>
                     Login
                   </button>
                 )}
                 {activeTab !== "register" && (
-                  // * registration tab selection
                   <button
                     onClick={() => {
                       resetStates();
@@ -300,17 +280,10 @@ export default function AuthPage() {
                     }}
                     className={styles.downloadBtn}
                   >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" style={{ marginRight: "8px" }}>
-                      <circle cx="12" cy="7" r="4" />
-                      <path d="M16 21v-2a4 4 0 0 0-8 0v2" />
-                      <line x1="18" y1="8" x2="24" y2="8" />
-                      <line x1="21" y1="5" x2="21" y2="11" />
-                    </svg>
                     Register
                   </button>
                 )}
                 {activeTab !== "forgot" && (
-                  // * forgot password tab selection
                   <button
                     onClick={() => {
                       resetStates();
@@ -318,39 +291,37 @@ export default function AuthPage() {
                     }}
                     className={styles.downloadBtn}
                   >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" style={{ marginRight: "8px" }}>
-                      <circle cx="15" cy="15" r="4" />
-                      <path d="M10 14v-4h4" />
-                      <line x1="10" y1="10" x2="14" y2="6" />
-                    </svg>
                     Forgot Pass?
                   </button>
                 )}
               </div>
-
             </form>
           </div>
         </div>
       </div>
 
+      {/* ✅ Dynamic Infinite Scroll Section */}
       <section className={styles.socialProofSection}>
         <h3 className={styles.socialProofTitle}>Join the Trivib Community</h3>
         <div className={styles.carouselContainer}>
-          <div className={styles.carousel}>
-            {[...recentUsers, ...recentUsers].map((user, index) => (
-              <div key={index} className={styles.userCard}>
-                <div className={styles.userCardInner}>
-                  <div className={styles.userAvatar}>{user.avatar}</div>
-                  <div className={styles.userInfo}>
-                    <p className={styles.userName}>
-                      {user.name}
-                    </p>
-                    <p className={styles.userRole}>{user.role}</p>
+          {loadingUsers ? (
+            <div style={{ textAlign: "center", padding: "2rem" }}>
+              <Loader />
+            </div>
+          ) : (
+            <div className={styles.carousel}>
+              {[...recentUsers, ...recentUsers].map((u, i) => (
+                <div key={i} className={styles.userCard}>
+                  <div className={styles.userCardInner}>
+                    <div className={styles.userAvatar}>{u.avatar || "👽"}</div>
+                    <div className={styles.userInfo}>
+                      <p className={styles.userName}>{u.username || "Anonymous"}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </div>

@@ -3,6 +3,7 @@
 import { useAuth } from "./AuthProvider";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import Loader from "./Loader";
 
 export default function ProtectedRoute({ children, requireAuth = true, redirectTo = "/login" }) {
   const { user, loading } = useAuth();
@@ -18,7 +19,7 @@ export default function ProtectedRoute({ children, requireAuth = true, redirectT
     }
   }, [user, loading, requireAuth, redirectTo, router]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <Loader />;
   if ((requireAuth && !user) || (!requireAuth && user)) return null; // prevent flash
 
   return children;

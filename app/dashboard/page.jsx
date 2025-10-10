@@ -19,6 +19,7 @@ export default function Dashboard() {
       <main>
         <h1>Dashboard</h1>
         <p>Welcome, {user?.email}</p>
+        
         <button onClick={handleLogout}>Logout</button>
 
         <ActiveUsersCarousel />

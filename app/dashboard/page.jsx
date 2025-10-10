@@ -4,6 +4,8 @@ import { useAuth } from "../../components/AuthProvider";
 import { signOut } from "firebase/auth";
 import { auth } from "../../lib/firebase";
 import ActiveUsersCarousel from "@/components/ActiveUsersCarousel";
+import AvailableGamesCarousel from "@/components/AvailableGamesCarousel";
+import LeaderboardCarousel from "@/components/LeaderboardCarousel";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -20,6 +22,10 @@ export default function Dashboard() {
         <button onClick={handleLogout}>Logout</button>
 
         <ActiveUsersCarousel />
+
+        <AvailableGamesCarousel />
+
+        <LeaderboardCarousel />
       </main>
     </ProtectedRoute>
   );

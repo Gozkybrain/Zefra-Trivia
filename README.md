@@ -94,10 +94,9 @@ Players compete in real-time or asynchronously, staking in-app tokens that can b
 ```json
 {
   matchId: "auto_or_uuid",              // unique match identifier
-  type: "solo" | "online",              // distinguishes single-player vs. multiplayer
+  type: "solo" | "online" | "p2p",              // distinguishes single-player vs. multiplayer
 
   // 🔹 Creator & participants
-  createdBy: "uid",                     // whoever initiated it
   playerA: "uid",                       // always set (creator)
   playerB: "uid" | null,                // optional (for solo or unjoined games)
 

@@ -17,7 +17,7 @@ export default function DashboardLayout({ children }) {
                 {/* Header */}
                 <header className={styles.header}>
                     <div className={styles.headerLeft}>
-                        <Link href="/" style={styles.logoLink}>
+                        <Link href="/dashboard" style={styles.logoLink}>
                             <img
                                 src="/trivibv7.png"
                                 alt="Trivib Logo"

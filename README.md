@@ -93,20 +93,33 @@ Players compete in real-time or asynchronously, staking in-app tokens that can b
 ### `matches`
 ```json
 {
-  "matchId": "string",
-  "playerA": "uid",
-  "playerB": "uid",
-  "subjects": ["History", "Science", "Sports", "Tech"],
-  "questions": {
-    "playerA": [...],
-    "playerB": [...]
+  matchId: "auto_or_uuid",              // unique match identifier
+  type: "solo" | "online",              // distinguishes single-player vs. multiplayer
+
+  // 🔹 Creator & participants
+  createdBy: "uid",                     // whoever initiated it
+  playerA: "uid",                       // always set (creator)
+  playerB: "uid" | null,                // optional (for solo or unjoined games)
+
+  // 🔹 Game content
+  subjects: ["History", "Science"],     // chosen topics
+  questions: {
+    playerA: [...],                     // list of player A’s questions
+    playerB: [...]                      // list of player B’s questions (if exists)
   },
-  "status": "pending | active | completed | cancelled",
-  "stake": 50,
-  "winner": "uid",
-  "createdAt": "timestamp",
-  "completedAt": "timestamp"
+
+  // 🔹 State and progression
+  status: "waiting" | "active" | "completed" | "cancelled",
+  stake: 50,                            // wagered amount, or 0 for solo/AI games
+  winner: "uid" | "ai" | null,          // AI can be tagged explicitly
+  isLive: true,                         // for quick filtering of active matches
+
+  // 🔹 Meta
+  createdAt: serverTimestamp(),
+  completedAt: null,
+  duration: null,                       // optional — total seconds or ms
 }
+
 ```
 
 

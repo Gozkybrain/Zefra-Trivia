@@ -3,6 +3,7 @@ import ProtectedRoute from "../../components/ProtectedRoute";
 import { useAuth } from "../../components/AuthProvider";
 import { signOut } from "firebase/auth";
 import { auth } from "../../lib/firebase";
+import ActiveUsersCarousel from "@/components/ActiveUsersCarousel";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -17,6 +18,8 @@ export default function Dashboard() {
         <h1>Dashboard</h1>
         <p>Welcome, {user?.email}</p>
         <button onClick={handleLogout}>Logout</button>
+
+        <ActiveUsersCarousel />
       </main>
     </ProtectedRoute>
   );

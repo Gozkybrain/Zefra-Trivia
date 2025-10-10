@@ -11,12 +11,16 @@ import {
   where,
 } from "firebase/firestore";
 import { auth, db } from "../lib/firebase";
+import useUserPresence from "@/hooks/useUserPresence";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // ✅ Automatically handle online/offline status
+  useUserPresence(user?.uid);
 
   useEffect(() => {
     // Watch for auth state changes
@@ -27,7 +31,6 @@ export function AuthProvider({ children }) {
         return;
       }
 
-      // Reference to user profile in Firestore
       const userRef = doc(db, "users", firebaseUser.uid);
 
       // Real-time listener for user profile
@@ -47,12 +50,11 @@ export function AuthProvider({ children }) {
             if (tx.type === "debit") balance -= Number(tx.amount || 0);
           });
 
-          // Merge everything into one unified object
           const mergedUser = {
             uid: firebaseUser.uid,
             email: firebaseUser.email,
             displayName: firebaseUser.displayName,
-            ...userData, // Firestore profile (username, avatar, etc.)
+            ...userData,
             balance,
           };
 
@@ -69,7 +71,6 @@ export function AuthProvider({ children }) {
         setLoading(false);
       });
 
-      // Clean up Firestore listener when user logs out or component unmounts
       return () => unsubscribeUser();
     });
 

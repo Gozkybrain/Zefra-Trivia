@@ -69,8 +69,66 @@
 .mainContent {
     flex: 1;
     overflow-y: auto;
-    padding: 1rem;
+    /* padding: 1rem; */
 }
+
+.main {
+    /* padding: 2rem; */
+    /* background-color: #f4f4f4; */
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+}
+
+.welcomeCard {
+    display: flex;
+    align-items: center;
+    background-color: #2d2d2d;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem 1rem;
+    margin: 0 0.5rem;
+    margin-bottom: 2rem;
+    margin-top: 1rem;
+}
+
+.avatarProfile {
+    font-size: 2.5rem;
+    text-decoration: none;
+    padding: 1rem;
+    font-weight: 600;
+}
+
+.userInfo {
+    flex-grow: 1;
+}
+
+.username {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #f4f4f4;
+}
+
+.email {
+    margin: 0.3rem 0 0;
+    font-size: 1rem;
+    color: #dedede;
+}
+
+.logoutButton {
+    background-color: #e74c3c;
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    margin-left: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.logoutButton:hover {
+    background-color: #c0392b;
+}
+
 
 .footerNav {
     display: flex;

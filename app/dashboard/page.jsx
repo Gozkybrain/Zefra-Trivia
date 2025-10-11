@@ -6,6 +6,7 @@ import { auth } from "../../lib/firebase";
 import ActiveUsersCarousel from "@/components/ActiveUsersCarousel";
 import AvailableGamesCarousel from "@/components/AvailableGamesCarousel";
 import LeaderboardCarousel from "@/components/LeaderboardCarousel";
+import styles from "./dashboard.module.css";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -16,16 +17,18 @@ export default function Dashboard() {
 
   return (
     <ProtectedRoute>
-      <main>
-        <h1>Dashboard</h1>
-        <p>Welcome, {user?.email}</p>
-        
-        <button onClick={handleLogout}>Logout</button>
+      <main className={styles.main}>
+        <div className={styles.welcomeCard}>
+         <div className={styles.avatarProfile}> {user?.avatar}</div>
+          <div className={styles.userInfo}>
+            <h2 className={styles.username}>{user?.username || "Unnamed User"}</h2>
+            <p className={styles.email}>{user?.email}</p>
+          </div>
+          <button className={styles.logoutButton} onClick={handleLogout}>Logout</button>
+        </div>
 
         <ActiveUsersCarousel />
-
         <AvailableGamesCarousel />
-
         <LeaderboardCarousel />
       </main>
     </ProtectedRoute>

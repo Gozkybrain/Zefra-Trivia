@@ -38,7 +38,7 @@ export default function DashboardLayout({ children }) {
                         {/* display profile avatar and name */}
                         <Link href="/dashboard/profile" className={styles.avatar}>
                             <span className={styles.avatarEmoji}>
-                                {user?.avatar || "👽"} {user?.username}
+                                {/* {user?.avatar || "👽"} {user?.username} */}
                             </span>
                         </Link>
                     </div>

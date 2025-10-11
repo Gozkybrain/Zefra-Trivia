@@ -1,0 +1,116 @@
+.container {
+    padding: 10px;
+    /* background: #f9f9f9; */
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.empty {
+    color: #f4f4f4;
+    font-style: italic;
+}
+
+.marqueeOuter {
+    width: 100%;
+}
+
+.track {
+    display: flex;
+    gap: 12px;
+    align-items: stretch;
+}
+
+.card {
+  flex: 0 0 auto;
+  width: 250px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 15px 10px;
+  display: flex;
+  flex-direction: column;
+  /* align-items: center; */
+  justify-content: center; 
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+
+.avatar {
+    font-size: 36px;
+    margin-bottom: 4px;
+}
+
+.username {
+    font-size: 14px;
+    font-weight: 600;
+    color: #f4f4f4;
+    margin: 2px 0 6px;
+    text-align: left;
+}
+
+.subjects {
+    font-size: 14px;
+    color: #dedede;
+    text-align: left;
+    margin: 4px 0;
+}
+
+.stake {
+    font-size: 13px;
+    color: #f4f4f4;
+    font-weight: 600;
+    margin: 4px 0;
+    text-align: left;
+}
+
+.buttonBox {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.btn {
+    border: none;
+    color: white;
+    border-radius: 6px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.btnAccept {
+    background: #2e7d32;
+}
+
+.btnReject {
+    background: #c62828;
+}
+
+.btnDisabled {
+    background: #777;
+    cursor: not-allowed;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.link {
+  font-size: 14px;
+  color: #1e88e5;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.link:hover {
+  opacity: 0.8;
+}

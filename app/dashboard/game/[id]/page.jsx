@@ -6,6 +6,8 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../../../lib/firebase"; // ✅ Correct relative path
 import { useAuth } from "../../../../components/AuthProvider"; // ✅ Corrected import
 
+
+// * app needs cleaning
 export default function GamePage() {
   const { id } = useParams();
   const router = useRouter();

@@ -1,0 +1,78 @@
+.container {
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.empty {
+  color: #777;
+  font-style: italic;
+}
+
+.marqueeOuter {
+  width: 100%;
+}
+
+.track {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.card {
+  flex: 0 0 auto;
+  width: 180px;
+  background: rgba(255, 255, 255, 0.08);
+  /* border: 1px solid #ddd; */
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  position: relative;
+}
+
+.rank {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  font-size: 12px;
+  color: #888;
+}
+
+.avatar {
+  font-size: 40px;
+  margin-bottom: 6px;
+}
+
+.username {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f4f4f4;
+  margin: 2px 0 6px;
+  text-align: center;
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 12px;
+  color: #555;
+}
+
+.win {
+  font-weight: 700;
+  color: #2e7d32;
+}
+
+.played {
+  color: #757575;
+}

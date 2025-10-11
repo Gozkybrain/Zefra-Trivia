@@ -1,6 +1,5 @@
 .container {
     padding: 10px;
-    /* background: #f9f9f9; */
     border-radius: 8px;
     margin-top: 20px;
 }
@@ -34,7 +33,6 @@
   padding: 15px 10px;
   display: flex;
   flex-direction: column;
-  /* align-items: center; */
   justify-content: center; 
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
@@ -106,7 +104,7 @@
 
 .link {
   font-size: 14px;
-  color: #1e88e5;
+   color: #ccc;
   text-decoration: none;
   transition: opacity 0.2s ease;
 }

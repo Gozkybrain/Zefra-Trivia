@@ -16,6 +16,7 @@ import { db } from "../lib/firebase";
 import { useAuth } from "./AuthProvider";
 import styles from "../styles/AvailableGamesCarousel.module.css";
 
+
 export default function AvailableGamesCarousel() {
     const { user } = useAuth();
     const router = useRouter();
@@ -28,7 +29,7 @@ export default function AvailableGamesCarousel() {
     const id = uidRef.current;
     const styleElRef = useRef(null);
 
-    // 🔹 Fetch games (online or p2p, pending/live)
+    // * Fetch games (online or p2p, pending/live)
     useEffect(() => {
         const q = query(
             collection(db, "games"),
@@ -91,7 +92,7 @@ export default function AvailableGamesCarousel() {
         return () => unsubscribe();
     }, [user]);
 
-    // 🔹 Auto scroll setup
+    // * Auto scroll setup
     useEffect(() => {
         const removeStyle = () => {
             if (styleElRef.current) {
@@ -154,7 +155,7 @@ export default function AvailableGamesCarousel() {
         };
     }, [games, id]);
 
-    // 🔹 Game actions
+    // * Game actions
     const handleAction = async (callback, gameId, redirect = false) => {
         setLoadingId(gameId);
         try {
@@ -166,6 +167,7 @@ export default function AvailableGamesCarousel() {
         } finally {
             setLoadingId(null);
         }
+        // * Update with email for accept or decline
     };
 
     const displayList =
@@ -175,8 +177,8 @@ export default function AvailableGamesCarousel() {
         <div className={styles.container}>
             <div className={styles.headerRow}>
                 <h2 className={styles.title}>Available Games</h2>
-                <a href="/games" className={styles.link}>
-                    See all →
+                <a href="/dashboard/play" className={styles.link}>
+                    See all
                 </a>
             </div>
 
@@ -201,16 +203,16 @@ export default function AvailableGamesCarousel() {
                     >
                         {displayList.map((game, i) => {
                             const isCreator = game.playerA === user?.uid;
-                            const isOpponent = game.playerB === user?.uid;
+                            // const isOpponent = game.playerB === user?.uid;
 
                             return (
                                 <div key={`${game.id}-${i}`} className={styles.card}>
                                     <div style={{ display: "flex", gap: 8 }}>
                                         {game.playerB ? (
                                             <>
-                                                <span>{game.playerAData.avatar}</span>
+                                                <span className={styles.avatar}>{game.playerAData.avatar}</span>
                                                 <span>vs</span>
-                                                <span>{game.playerBData?.avatar || "👤"}</span>
+                                                <span className={styles.avatar}>{game.playerBData?.avatar || "👤"}</span>
                                             </>
                                         ) : (
                                             <>
@@ -229,7 +231,7 @@ export default function AvailableGamesCarousel() {
 
                                     <div className={styles.buttonBox}>
                                         {game.status === "live" ? (
-                                            // ✅ Show Play Now for both players if game is live
+                                            //  Show Play Now for both players if game is live
                                             <button
                                                 className={`${styles.btn} ${styles.btnAccept}`}
                                                 onClick={() => router.push(`/dashboard/game/${game.id}`)}
@@ -237,7 +239,7 @@ export default function AvailableGamesCarousel() {
                                                ➤ Play Now
                                             </button>
                                         ) : game.status === "pending" ? (
-                                            // ✅ If game is still pending
+                                            //  If game is still pending
                                             isCreator ? (
                                                 // If you're the creator, you can delete it
                                                 <button

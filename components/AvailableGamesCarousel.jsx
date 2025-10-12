@@ -168,6 +168,8 @@ export default function AvailableGamesCarousel() {
             setLoadingId(null);
         }
         // * Update with email for accept or decline
+        // if accepted, send email to the playerA and move staked amount from both players to to escrow
+        // if rejected, send email to playerA and return their funds back
     };
 
     const displayList =
@@ -236,7 +238,7 @@ export default function AvailableGamesCarousel() {
                                                 className={`${styles.btn} ${styles.btnAccept}`}
                                                 onClick={() => router.push(`/dashboard/game/${game.id}`)}
                                             >
-                                               ➤ Play Now
+                                                ➤ Play Now
                                             </button>
                                         ) : game.status === "pending" ? (
                                             //  If game is still pending

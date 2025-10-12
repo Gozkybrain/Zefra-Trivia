@@ -106,7 +106,7 @@ export default function GamePage() {
       {canPlay ? (
         <button
           style={styles.playBtn}
-          onClick={() => router.push(`/play/${id}`)}
+          onClick={() => router.push(`/dashboard/game/${id}`)}
         >
           Play Now
         </button>

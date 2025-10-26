@@ -146,7 +146,7 @@ const styles = {
     textAlign: "center",
   },
   playBtn: {
-    background: "#1e88e5",
+    background: "#2e7d31",
     color: "#fff",
     border: "none",
     borderRadius: "6px",

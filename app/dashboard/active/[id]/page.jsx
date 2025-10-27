@@ -6,7 +6,7 @@ import { db } from "@/lib/firebase";
 import { useParams, useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
 import Loader from "@/components/Loader";
-import styles from "../../profile/profile.module.css"; // reuse existing CSS
+import styles from "../../profile/profile.module.css"; 
 
 // 🕒 Time formatter
 function timeAgo(date) {

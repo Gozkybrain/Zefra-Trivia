@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../../../lib/firebase";
 import { useAuth } from "../../../../components/AuthProvider";
+import Loader from "@/components/Loader";
+
 
 export default function GamePage() {
   const { id } = useParams();
@@ -97,7 +99,7 @@ export default function GamePage() {
   if (authLoading || loading)
     return (
       <div style={styles.container}>
-        <p>Loading game...</p>
+        <Loader />
       </div>
     );
 
@@ -138,7 +140,7 @@ export default function GamePage() {
         <div style={styles.section}>
           <div style={styles.label}>Player B</div>
           <div style={styles.infoLine}>
-            <span style={styles.avatar}>{playerB?.avatar || "👤"}</span>
+            <span style={styles.avatar}>{playerB?.avatar || "👤"} </span>
             <span style={styles.value}>{playerBName}</span>
           </div>
         </div>
@@ -147,6 +149,16 @@ export default function GamePage() {
           <div style={styles.label}>Stake</div>
           <div style={styles.value}>🪙 {game.stake}</div>
         </div>
+
+        <div style={styles.section}>
+          <div style={styles.label}>Subjects</div>
+          <div style={styles.value}>
+            {Array.isArray(game.subjects)
+              ? game.subjects.join(", ")
+              : game.subjects || "—"}
+          </div>
+        </div>
+
 
         <div style={styles.section}>
           <div style={styles.label}>Status</div>

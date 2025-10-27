@@ -3,170 +3,297 @@
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "../../../../lib/firebase"; // ✅ Correct relative path
-import { useAuth } from "../../../../components/AuthProvider"; // ✅ Corrected import
+import { db } from "../../../../lib/firebase";
+import { useAuth } from "../../../../components/AuthProvider";
 
-
-// * app needs cleaning
 export default function GamePage() {
   const { id } = useParams();
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-  const [game, setGame] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  // ✅ Fetch game once auth is ready
+  const [game, setGame] = useState(null);
+  const [playerA, setPlayerA] = useState(null);
+  const [playerB, setPlayerB] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+
   useEffect(() => {
     if (authLoading || !id) return;
 
-    const fetchGame = async () => {
+    const fetchAll = async () => {
+      setLoading(true);
       try {
         const gameRef = doc(db, "games", id);
-        const snap = await getDoc(gameRef);
-
-        if (!snap.exists()) {
-          console.warn("Game not found.");
+        const gSnap = await getDoc(gameRef);
+        if (!gSnap.exists()) {
           router.push("/dashboard");
           return;
         }
 
-        setGame({ id: snap.id, ...snap.data() });
+        const gData = { id: gSnap.id, ...gSnap.data() };
+        setGame(gData);
+
+        const playerAFetch = gData.playerA
+          ? getDoc(doc(db, "users", gData.playerA)).catch(() => null)
+          : null;
+        const playerBFetch = gData.playerB
+          ? getDoc(doc(db, "users", gData.playerB)).catch(() => null)
+          : null;
+
+        const [aSnap, bSnap] = await Promise.all([playerAFetch, playerBFetch]);
+
+        if (aSnap && aSnap.exists()) {
+          const a = aSnap.data();
+          setPlayerA({
+            uid: aSnap.id,
+            username: a.username || a.displayName || "Player A",
+            avatar: a.avatar || "👤",
+          });
+        }
+
+        if (bSnap && bSnap.exists()) {
+          const b = bSnap.data();
+          setPlayerB({
+            uid: bSnap.id,
+            username: b.username || b.displayName || "Player B",
+            avatar: b.avatar || "👤",
+          });
+        }
       } catch (err) {
-        console.error("Error loading game:", err);
+        console.error(err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchGame();
+    fetchAll();
   }, [id, authLoading, router]);
 
-  // ✅ Handle accept/reject actions
-  const handleDecision = async (decision) => {
+  const doAction = async (action) => {
+    if (!game || !user) return;
+    setActionLoading(true);
     try {
-      const gameRef = doc(db, "games", id);
+      const ref = doc(db, "games", id);
 
-      if (decision === "accept") {
-        await updateDoc(gameRef, {
-          playerB: user.uid,
-          status: "live",
-        });
-      } else {
-        await updateDoc(gameRef, {
-          status: "rejected",
-        });
+      if (action === "accept") {
+        await updateDoc(ref, { playerB: user.uid, status: "live" });
+        router.push(`/play/${id}`);
+      } else if (action === "decline") {
+        await updateDoc(ref, { status: "rejected" });
+        router.push("/dashboard");
+      } else if (action === "cancel") {
+        await updateDoc(ref, { status: "cancelled" });
+        router.push("/dashboard");
+      } else if (action === "play") {
+        router.push(`/play/${id}`);
       }
-
-      router.push("/dashboard");
     } catch (err) {
-      console.error("Error updating game:", err);
+      console.error(err);
+    } finally {
+      setActionLoading(false);
     }
   };
 
-  if (authLoading || loading) {
+  if (authLoading || loading)
     return (
       <div style={styles.container}>
         <p>Loading game...</p>
       </div>
     );
-  }
 
-  if (!user) {
+  if (!user)
     return (
       <div style={styles.container}>
         <p>You must be logged in to view this page.</p>
       </div>
     );
-  }
 
-  if (!game) {
+  if (!game)
     return (
       <div style={styles.container}>
         <p>Game not found or removed.</p>
       </div>
     );
-  }
 
   const isCreator = game.playerA === user.uid;
-  const isOpponent = game.playerB === user.uid;
   const isPending = game.status === "pending";
   const isLive = game.status === "live";
 
-  const canPlay = isLive && (isCreator || isOpponent);
+  const playerAName = playerA?.username || "Player A";
+  const playerBName = playerB?.username || (game.playerB ? "Opponent" : "Waiting...");
 
   return (
     <div style={styles.container}>
-      <h1>🎮 Game Room</h1>
-      <p><b>Game ID:</b> {id}</p>
-      <p><b>Type:</b> {game.type}</p>
-      <p><b>Stake:</b> ₦{game.stake}</p>
-      <p><b>Status:</b> {game.status}</p>
+      <h1 style={styles.title}>🎮 Game Details</h1>
 
-      {/* ✅ Dynamic game controls */}
-      {canPlay ? (
-        <button
-          style={styles.playBtn}
-          onClick={() => router.push(`/dashboard/game/${id}`)}
-        >
-          Play Now
-        </button>
-      ) : isPending && isCreator ? (
-        <p>Waiting for opponent to join...</p>
-      ) : isPending && !isCreator ? (
-        <div style={styles.actionButtons}>
-          <button
-            style={{ ...styles.actionBtn, background: "#43a047" }}
-            onClick={() => handleDecision("accept")}
-          >
-            Accept {game.createdByName || "John Doe"}
-          </button>
-          <button
-            style={{ ...styles.actionBtn, background: "#e53935" }}
-            onClick={() => handleDecision("reject")}
-          >
-            Reject {game.createdByName || "John Doe"}
-          </button>
+      <div style={styles.card}>
+        <div style={styles.section}>
+          <div style={styles.label}>Player A</div>
+          <div style={styles.infoLine}>
+            <span style={styles.avatar}>{playerA?.avatar || "👤"}</span>
+            <span style={styles.value}>{playerAName}</span>
+          </div>
         </div>
-      ) : (
-        <p>Game inactive.</p>
-      )}
+
+        <div style={styles.section}>
+          <div style={styles.label}>Player B</div>
+          <div style={styles.infoLine}>
+            <span style={styles.avatar}>{playerB?.avatar || "👤"}</span>
+            <span style={styles.value}>{playerBName}</span>
+          </div>
+        </div>
+
+        <div style={styles.section}>
+          <div style={styles.label}>Stake</div>
+          <div style={styles.value}>🪙 {game.stake}</div>
+        </div>
+
+        <div style={styles.section}>
+          <div style={styles.label}>Status</div>
+          <div style={styles.value}>{game.status}</div>
+        </div>
+
+        <div style={styles.actions}>
+          {isLive && (
+            <button
+              style={styles.playBtn}
+              onClick={() => doAction("play")}
+              disabled={actionLoading}
+            >
+              ▶️ Play Now
+            </button>
+          )}
+
+          {isPending && isCreator && (
+            <button
+              style={styles.cancelBtn}
+              onClick={() => doAction("cancel")}
+              disabled={actionLoading}
+            >
+              Cancel Game
+            </button>
+          )}
+
+          {isPending && !isCreator && (
+            <>
+              <button
+                style={styles.acceptBtn}
+                onClick={() => doAction("accept")}
+                disabled={actionLoading}
+              >
+                Accept
+              </button>
+              <button
+                style={styles.declineBtn}
+                onClick={() => doAction("decline")}
+                disabled={actionLoading}
+              >
+                Decline
+              </button>
+            </>
+          )}
+
+          {!isPending && !isLive && (
+            <div style={styles.infoText}>This game is {game.status}.</div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
 
 const styles = {
   container: {
-    padding: "20px",
+    minHeight: "80vh",
     color: "#fff",
-    minHeight: "60vh",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+    padding: "32px 16px",
+  },
+  title: {
+    fontSize: "1.8rem",
+    marginBottom: 20,
+  },
+  card: {
+    width: "100%",
+    maxWidth: 720,
+    background: "rgba(255,255,255,0.05)",
+    borderRadius: 12,
+    padding: 24,
+    boxShadow: "0 6px 18px rgba(0,0,0,0.4)",
+    display: "flex",
+    flexDirection: "column",
+    gap: 16,
+  },
+  section: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 4,
+    borderBottom: "1px solid rgba(255,255,255,0.08)",
+    paddingBottom: 12,
+  },
+  label: {
+    fontSize: 13,
+    color: "#aaa",
+  },
+  infoLine: {
+    display: "flex",
+    alignItems: "center",
+    gap: 10,
+  },
+  avatar: {
+    width: 36,
+    height: 36,
+    borderRadius: "50%",
+    background: "rgba(255,255,255,0.08)",
+    display: "flex",
+    alignItems: "center",
     justifyContent: "center",
-    textAlign: "center",
+    fontSize: 18,
+  },
+  value: {
+    fontSize: 16,
+    fontWeight: 600,
+  },
+  actions: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: 10,
+    marginTop: 16,
+    justifyContent: "flex-start",
   },
   playBtn: {
     background: "#2e7d31",
     color: "#fff",
-    border: "none",
-    borderRadius: "6px",
     padding: "10px 16px",
-    marginTop: "20px",
+    borderRadius: 8,
+    border: "none",
     cursor: "pointer",
-    fontSize: "16px",
   },
-  actionButtons: {
-    display: "flex",
-    gap: "15px",
-    marginTop: "20px",
-  },
-  actionBtn: {
+  acceptBtn: {
+    background: "#43a047",
     color: "#fff",
+    padding: "10px 14px",
+    borderRadius: 8,
     border: "none",
-    borderRadius: "6px",
-    padding: "10px 16px",
     cursor: "pointer",
-    fontSize: "15px",
-    transition: "0.3s",
   },
+  declineBtn: {
+    background: "#e53935",
+    color: "#fff",
+    padding: "10px 14px",
+    borderRadius: 8,
+    border: "none",
+    cursor: "pointer",
+  },
+  cancelBtn: {
+    background: "#757575",
+    color: "#fff",
+    padding: "10px 14px",
+    borderRadius: 8,
+    border: "none",
+    cursor: "pointer",
+  },
+  infoText: { color: "#bbb", padding: "10px 0" },
 };

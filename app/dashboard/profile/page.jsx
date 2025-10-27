@@ -204,24 +204,37 @@ export default function ProfilePage() {
                         {selectedAvatar || "👤"}
                     </div>
                     <div className={styles.userInfo}>
-                        {editing ? (
-                            <input
-                                type="text"
-                                value={profile.username || ""}
-                                onChange={(e) =>
-                                    setProfile({ ...profile, username: e.target.value })
-                                }
-                                className={styles.input}
-                            />
-                        ) : (
-                            <h2 className={styles.username}>
-                                {profile.username || "Unnamed Player"}
-                            </h2>
-                        )}
+                        <div className={styles.nameRow}>
+                            {editing ? (
+                                <input
+                                    type="text"
+                                    value={profile.username || ""}
+                                    onChange={(e) =>
+                                        setProfile({ ...profile, username: e.target.value })
+                                    }
+                                    className={styles.input}
+                                />
+                            ) : (
+                                <h2 className={styles.username}>
+                                    {profile.username || "Unnamed Player"}
+                                </h2>
+                            )}
+
+                            {/* 🛠️ Admin Mode Button */}
+                            {profile.role === "admin" && (
+                                <button
+                                    className={styles.adminBtn}
+                                    onClick={() => router.push("/admin")}
+                                    title="Switch to Admin Dashboard"
+                                >
+                                    Admin Mode
+                                </button>
+                            )}
+                        </div>
                         <p className={styles.email}>{profile.email || user.email}</p>
                     </div>
                 </div>
-                
+
 
                 <div className={styles.bioSection}>
                     {editing ? (
@@ -349,22 +362,22 @@ export default function ProfilePage() {
                                     </strong>
                                     <p>Stake: 🪙 {g.stake || 0}</p>
 
-                                      <div className={styles.gameActions}>
-                                    {g.status === "live" && (
+                                    <div className={styles.gameActions}>
+                                        {g.status === "live" && (
+                                            <button
+                                                className={styles.playBtn}
+                                                onClick={() => handlePlayNow(g.id)}
+                                            >
+                                                Play Now
+                                            </button>
+                                        )}
                                         <button
-                                            className={styles.playBtn}
-                                            onClick={() => handlePlayNow(g.id)}
+                                            className={styles.deleteBtn}
+                                            onClick={() => handleDelete(g.id)}
                                         >
-                                            Play Now
+                                            Delete
                                         </button>
-                                    )}
-                                    <button
-                                        className={styles.deleteBtn}
-                                        onClick={() => handleDelete(g.id)}
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
+                                    </div>
                                 </div>
                             </li>
                         ))}
@@ -393,37 +406,37 @@ export default function ProfilePage() {
                                             minimumFractionDigits: 2,
                                             maximumFractionDigits: 2,
                                         })}
-                                    </p>  
-                                    
+                                    </p>
+
                                     <div className={styles.gameActions}>
-                                    {g.status === "pending" ? (
-                                        <>
+                                        {g.status === "pending" ? (
+                                            <>
+                                                <button
+                                                    className={styles.acceptBtn}
+                                                    onClick={() => handleAccept(g.id)}
+                                                >
+                                                    Accept
+                                                </button>
+                                                <button
+                                                    className={styles.rejectBtn}
+                                                    onClick={() => handleReject(g.id)}
+                                                >
+                                                    Reject
+                                                </button>
+                                            </>
+                                        ) : g.status === "live" ? (
                                             <button
-                                                className={styles.acceptBtn}
-                                                onClick={() => handleAccept(g.id)}
+                                                className={styles.playBtn}
+                                                onClick={() => handlePlayNow(g.id)}
                                             >
-                                                Accept
+                                                Play Now
                                             </button>
-                                            <button
-                                                className={styles.rejectBtn}
-                                                onClick={() => handleReject(g.id)}
-                                            >
-                                                Reject
-                                            </button>
-                                        </>
-                                    ) : g.status === "live" ? (
-                                        <button
-                                            className={styles.playBtn}
-                                            onClick={() => handlePlayNow(g.id)}
-                                        >
-                                            Play Now
-                                        </button>
-                                    ) : (
-                                        <span className={styles.rejectedLabel}>Rejected</span>
-                                    )}
+                                        ) : (
+                                            <span className={styles.rejectedLabel}>Rejected</span>
+                                        )}
+                                    </div>
                                 </div>
-                                </div>
-                              
+
                             </li>
                         ))}
                     </ul>

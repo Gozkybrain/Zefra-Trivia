@@ -44,6 +44,27 @@
     flex: 1;
 }
 
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.adminBtn {
+  background: #c62828;
+  color: #fff;
+  font-size: 0.85rem;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.adminBtn:hover {
+  background: #444;
+}
+
 .username {
     font-size: 1.5rem;
     margin: 0;
@@ -331,4 +352,14 @@
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+
+/* 📱 Responsive tweak */
+@media (max-width: 600px) {
+  .nameRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
 }

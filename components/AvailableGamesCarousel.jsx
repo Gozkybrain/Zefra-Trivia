@@ -16,7 +16,6 @@ import { db } from "../lib/firebase";
 import { useAuth } from "./AuthProvider";
 import styles from "../styles/AvailableGamesCarousel.module.css";
 
-
 export default function AvailableGamesCarousel() {
     const { user } = useAuth();
     const router = useRouter();
@@ -167,9 +166,6 @@ export default function AvailableGamesCarousel() {
         } finally {
             setLoadingId(null);
         }
-        // * Update with email for accept or decline
-        // if accepted, send email to the playerA and move staked amount from both players to to escrow
-        // if rejected, send email to playerA and return their funds back
     };
 
     const displayList =
@@ -179,7 +175,7 @@ export default function AvailableGamesCarousel() {
         <div className={styles.container}>
             <div className={styles.headerRow}>
                 <h2 className={styles.title}>Available Games</h2>
-                <a href="/dashboard/play" className={styles.link}>
+                <a href="/dashboard/available-games" className={styles.link}>
                     See all
                 </a>
             </div>
@@ -205,56 +201,81 @@ export default function AvailableGamesCarousel() {
                     >
                         {displayList.map((game, i) => {
                             const isCreator = game.playerA === user?.uid;
-                            // const isOpponent = game.playerB === user?.uid;
+                            const isOpponent = game.playerB === user?.uid;
+
+                            // 🧠 Determine who the opponent actually is
+                            const opponentName = isCreator
+                                ? game.playerBData?.username || "Waiting..."
+                                : game.playerAData?.username || "Unknown";
 
                             return (
                                 <div key={`${game.id}-${i}`} className={styles.card}>
                                     <div style={{ display: "flex", gap: 8 }}>
                                         {game.playerB ? (
                                             <>
-                                                <span className={styles.avatar}>{game.playerAData.avatar}</span>
+                                                <span className={styles.avatar}>
+                                                    {game.playerAData.avatar}
+                                                </span>
                                                 <span>vs</span>
-                                                <span className={styles.avatar}>{game.playerBData?.avatar || "👤"}</span>
+                                                <span className={styles.avatar}>
+                                                    {game.playerBData?.avatar || "👤"}
+                                                </span>
                                             </>
                                         ) : (
                                             <>
-                                                <span>{game.playerAData.avatar}</span>
+                                                <span className={styles.avatar}>{game.playerAData.avatar}</span>
                                                 <span>Waiting for Opponent</span>
                                             </>
                                         )}
                                     </div>
 
-                                    <p className={styles.subjects}>
-                                        {Array.isArray(game.subjects)
-                                            ? game.subjects.join(", ")
-                                            : "—"}
-                                    </p>
                                     <p className={styles.stake}>Stake: 🪙 {game.stake}</p>
 
+                                    {/* ✅ Correct opponent display */}
+                                    <p className={styles.stake}>
+                                        Opponent: {opponentName}
+                                    </p>
+
                                     <div className={styles.buttonBox}>
+                                        {/* 👁 View details */}
+                                        <button
+                                            className={`${styles.btn} ${styles.btnView}`}
+                                            onClick={() =>
+                                                router.push(`/dashboard/game/${game.id}`)
+                                            }
+                                        >
+                                            📁 Details
+                                        </button>
+
                                         {game.status === "live" ? (
-                                            //  Show Play Now for both players if game is live
                                             <button
                                                 className={`${styles.btn} ${styles.btnAccept}`}
-                                                onClick={() => router.push(`/dashboard/game/${game.id}`)}
+                                                onClick={() =>
+                                                    router.push(`/dashboard/game/${game.id}`)
+                                                }
                                             >
                                                 ➤ Play Now
                                             </button>
                                         ) : game.status === "pending" ? (
-                                            //  If game is still pending
                                             isCreator ? (
-                                                // If you're the creator, you can delete it
                                                 <button
                                                     disabled={loadingId === game.id}
                                                     className={`${styles.btn} ${styles.btnReject}`}
                                                     onClick={() =>
-                                                        handleAction(() => deleteDoc(doc(db, "games", game.id)), game.id)
+                                                        handleAction(
+                                                            () =>
+                                                                deleteDoc(
+                                                                    doc(db, "games", game.id)
+                                                                ),
+                                                            game.id
+                                                        )
                                                     }
                                                 >
-                                                    {loadingId === game.id ? "Deleting..." : "✗ Delete"}
+                                                    {loadingId === game.id
+                                                        ? "Deleting..."
+                                                        : "✗ Delete"}
                                                 </button>
                                             ) : (
-                                                // If you're not the creator (potential opponent)
                                                 <>
                                                     <button
                                                         disabled={loadingId === game.id}
@@ -262,36 +283,44 @@ export default function AvailableGamesCarousel() {
                                                         onClick={() =>
                                                             handleAction(
                                                                 () =>
-                                                                    updateDoc(doc(db, "games", game.id), {
-                                                                        playerB: user.uid,
-                                                                        status: "live",
-                                                                    }),
+                                                                    updateDoc(
+                                                                        doc(db, "games", game.id),
+                                                                        {
+                                                                            playerB: user.uid,
+                                                                            status: "live",
+                                                                        }
+                                                                    ),
                                                                 game.id,
-                                                                true // redirect after accept
+                                                                true
                                                             )
                                                         }
                                                     >
                                                         {loadingId === game.id
                                                             ? "Accepting..."
-                                                            : `✓  ${game.playerAData.username}`}
+                                                            : `✓  Accept`}
                                                     </button>
 
                                                     <button
                                                         disabled={loadingId === game.id}
                                                         className={`${styles.btn} ${styles.btnReject}`}
                                                         onClick={() =>
-                                                            handleAction(() => deleteDoc(doc(db, "games", game.id)), game.id)
+                                                            handleAction(
+                                                                () =>
+                                                                    deleteDoc(
+                                                                        doc(db, "games", game.id)
+                                                                    ),
+                                                                game.id
+                                                            )
                                                         }
                                                     >
                                                         {loadingId === game.id
                                                             ? "Rejecting..."
-                                                            : `✗  ${game.playerAData.username}`}
+                                                            : `✗  Reject`}
                                                     </button>
                                                 </>
                                             )
                                         ) : null}
                                     </div>
-
                                 </div>
                             );
                         })}

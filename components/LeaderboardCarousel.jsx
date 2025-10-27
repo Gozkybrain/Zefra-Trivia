@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import styles from "../styles/LeaderboardCarousel.module.css"; 
+import styles from "../styles/LeaderboardCarousel.module.css";
+import Link from "next/link";
 
 export default function LeaderboardCarousel() {
   const [users, setUsers] = useState([]);
@@ -28,6 +29,7 @@ export default function LeaderboardCarousel() {
           };
         });
 
+        // sort by wins, then by join date
         userList.sort((a, b) => {
           const winsA = a.stats?.wins || 0;
           const winsB = b.stats?.wins || 0;
@@ -46,6 +48,7 @@ export default function LeaderboardCarousel() {
     fetchLeaderboard();
   }, []);
 
+  // 🌀 dynamic CSS for marquee animation
   useEffect(() => {
     const styleId = `marquee-style-${id}`;
     if (document.getElementById(styleId)) return;
@@ -111,7 +114,11 @@ export default function LeaderboardCarousel() {
             }}
           >
             {displayList.map((user, index) => (
-              <div key={`${user.id}-${index}`} className={styles.card}>
+              <Link
+                key={`${user.id}-${index}`}
+                href={`/dashboard/active/${user.id}`}
+                className={styles.card}
+              >
                 <div className={styles.rank}>#{(index % users.length) + 1}</div>
                 <div className={styles.avatar}>{user.avatarEmoji}</div>
                 <p className={styles.username}>{user.username}</p>
@@ -119,7 +126,7 @@ export default function LeaderboardCarousel() {
                   <span className={styles.win}>Wins: {user.stats.wins}</span>
                   <span className={styles.played}>Played: {user.stats.gamesPlayed}</span>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

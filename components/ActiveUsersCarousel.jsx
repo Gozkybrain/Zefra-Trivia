@@ -6,7 +6,6 @@ import { db } from "@/lib/firebase";
 import styles from "../styles/ActiveUsersCarousel.module.css";
 import Link from "next/link"; 
 
-
 export default function ActiveUsersCarousel() {
   const [activeUsers, setActiveUsers] = useState([]);
 
@@ -37,7 +36,11 @@ export default function ActiveUsersCarousel() {
       ) : (
         <div className={styles.carousel}>
           {activeUsers.map((user) => (
-            <div key={user.id} className={styles.userCard}>
+            <Link
+              key={user.id}
+              href={`/dashboard/active/${user.id}`}
+              className={styles.userCard}
+            >
               <div className={styles.avatar}>
                 {user.avatar || "👽"}
               </div>
@@ -47,7 +50,7 @@ export default function ActiveUsersCarousel() {
               <div className={styles.games}>
                 Played {user?.stats?.gamesPlayed || 0} games
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}

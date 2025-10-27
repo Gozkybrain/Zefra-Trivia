@@ -112,3 +112,14 @@
 .link:hover {
   opacity: 0.8;
 }
+
+
+.btnView {
+  background: #1e40af;
+  color: #fff;
+  transition: background 0.2s ease;
+}
+
+.btnView:hover {
+  background: #1d4ed8;
+}

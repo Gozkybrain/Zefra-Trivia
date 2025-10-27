@@ -25,6 +25,7 @@
   text-decoration: none;
 }
 
+
 .noUsers {
   opacity: 0.6;
   font-size: 0.9rem;
@@ -44,6 +45,8 @@
   border-radius: 10px;
   padding: 10px 8px;
   width: 150px;
+  text-decoration: none;
+  color: #ccc;
 }
 
 .avatar {
@@ -60,10 +63,10 @@
 }
 
 .games {
-    font-size: 0.8rem;
-    margin-top: 0.7rem;
+  font-size: 0.8rem;
+  margin-top: 0.7rem;
 }
 
 .active {
-    color: aqua;
+  color: aqua;
 }

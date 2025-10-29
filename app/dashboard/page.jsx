@@ -11,9 +11,11 @@ import styles from "./dashboard.module.css";
 export default function Dashboard() {
   const { user } = useAuth();
 
-  const handleLogout = async () => {
-    await signOut(auth);
-  };
+const handleLogout = async () => {
+  await signOut(auth);
+  window.location.reload(); 
+};
+
 
   return (
     <ProtectedRoute>
